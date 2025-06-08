@@ -1,0 +1,141 @@
+# Sentrilite Main Dashboard - Usage Guide
+
+This dashboard provides a centralized control panel for managing multiple EDR/XDR-enabled Linux servers
+running the Sentrilite agent. It allows you to upload a server list, monitor live status and alerts, and
+apply EDR/XDR rules across your infrastructure.
+
+🧩 Features
+    ✅ Upload a list of servers to manage
+    ✅ Auto-fetch health and alert status from each server via WebSocket
+    ✅ View and edit server groups (tags)
+    ✅ Apply EDR rules (match key/value with risk level)
+    ✅ Apply XDR rules (block/allow IPs or ports)
+    ✅ Filter and select servers by group tags
+    ✅ Theme toggle (light/dark)
+    ✅ Export dashboard view for re-importing later
+
+---
+
+# Main Dashboard - Usage Guide
+
+📁 File Format for Upload
+
+Upload a .txt file containing a list of servers to manage, one per line. Optionally, you can specify a tag (group) for each server:
+
+192.168.1.10,PROD
+192.168.1.11,DEV
+192.168.1.12
+
+Tags are optional and can be edited later directly in the dashboard UI.
+
+---
+
+# Steps:
+
+Open main.html in a browser (preferably served via HTTP for WebSocket support).
+
+Upload Server List using the "Upload Server List" button.
+
+Select servers manually via checkbox, or apply rules using group filters.
+
+Apply EDR Rules:
+    Match Key (e.g. cmd, comm, arg1, ip)
+    Match Values (comma-separated)
+    Tags (optional)
+    Risk Level (1 = High, 2 = Medium, 3 = Low)
+
+Apply XDR Rules:
+    Block/Allow
+    IP and/or Port (or port range)
+    Optional server tag filter
+
+Export View: Use "Download Dashboard" to export current servers + group tags to a .txt file.
+
+---
+
+# Notes:
+
+main.html only shows CMD= and ARG= when they are non-empty for cleaner logs.
+Server selection is based on checkbox OR matching group tag (inclusive OR).
+Tags are editable inline in the "Groups" column after uploading.
+
+---
+
+# Sentrilite Dashboard.html - Usage Guide
+
+This dashboard provides a real-time view of system activity, alerts, and threat indicators based on eBPF events captured by the Sentrilite agent.
+
+Simply open `dashboard.html` in a modern browser (e.g. Chrome or Firefox) to start visualizing live events.
+
+---
+
+## ✅ What the Dashboard Shows
+
+You will see:
+
+- **Live Process & Network Activity** — traced via `execve()`, `connect()`, `accept()`, `socket()`, etc.
+- **Risk Classification** — events are automatically color-coded:
+  - 🔴 **High Risk** (Red) → e.g. intrusions, data exfiltration, reverse shells
+  - 🟠 **Medium Risk** (Orange) → suspicious but not confirmed
+  - 🟢 **Low Risk** (Green) → normal system activity
+
+- **Event Filters** — filter by UID, IP, command, or tag in real-time.
+- **Tagging Engine** — events may carry tags such as:
+  - `intruder`, `info-disclosure`, `scanner`, `exfiltration`, `unexpected-service`, etc.
+
+---
+
+## 🛠️ Interactive Features
+
+### 🎛 Sidebar: EDR + XDR Manager
+
+- **Add Rule**: Define custom detection rules (match `cmd`, `arg1`, `ip`, etc.)  
+- **View/Delete Rules**: Inspect or clear current detection rules  
+- **Clear Events**: Reset the live log
+
+### 🛡️ XDR Rule Management
+
+- Add port/IP-based **blocking or allowlisting rules**
+- Supports:
+  - IP + Port
+  - Port ranges
+  - Wildcards (leave field blank to match any)
+
+Example:
+> Block connections to port `4444` from any IP
+
+---
+
+## 🔔 Alerts and Alert History
+
+- Automatic alerts show up when high-risk behavior is detected
+- Alert history can be:
+  - Viewed
+  - Downloaded as JSON
+  - Cleared via the dashboard UI
+
+---
+
+## 🌐 Remote Access Setup
+
+To serve the dashboard remotely:
+
+1. **Install nginx** on your server:
+   ```bash
+   sudo apt install nginx
+   sudo cp dashboard.html /var/www/html/
+   sudo systemctl start nginx
+
+2. Edit Websocket connection in dashboard.html
+const ws = new WebSocket("ws://<your-server-ip>:8765");
+
+3. Access from browser:
+http://<your-server-ip>/dashboard.html
+
+---
+
+Contact
+
+Sentrilite
+Email: info@sentrilite.com
+© 2025 Sentrilite, Inc. All rights reserved.

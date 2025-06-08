@@ -1,0 +1,392 @@
+<!--
+Copyright (c) 2025 Sentrilite, Inc. All rights reserved.
+
+This software is the confidential and proprietary information of
+Sentrilite ("Confidential Information"). You shall not
+disclose such Confidential Information and shall use it only
+in accordance with the terms of the license agreement you entered
+into with Sentrilite.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>System Security Dashboard</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(#0f0f0f, #1a1a1a); color: #eee; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+    .sidebar { width: 260px; background: #111; padding: 1em; border-right: 2px solid #333; display: flex; flex-direction: column; }
+    .sidebar button { margin-top: 0.5em; padding: 0.6em; border: none; background: #222; color: #ccc; cursor: pointer; border-radius: 8px; transition: background 0.2s, transform 0.2s; }
+    .sidebar button:hover { background: #444; transform: scale(1.02); }
+    .main-content { flex: 1; padding: 1em; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em; gap: 10px; }
+    h1, h2, h3 { color: #fff; margin-top: 0; }
+    .counters { display: flex; gap: 0.7em; margin-bottom: 1em; }
+    .counters button { padding: 0.6em 1.2em; border-radius: 8px; font-weight: bold; font-size: 0.9em; border: none; cursor: pointer; transition: background 0.2s; }
+    .risk-high { background: #e74c3c; color: white; }
+    .risk-medium { background: #f39c12; color: black; }
+    .risk-low { background: #2ecc71; color: black; }
+    .filters { display: flex; gap: 0.7em; margin-bottom: 1em; flex-wrap: wrap; }
+    .filters input { padding: 0.5em; font-size: 0.85em; border-radius: 6px; border: none; width: 140px; }
+    .alerts { margin-bottom: 1em; padding: 1em; background-color: #330000; border: 1px solid #ff4c4c; color: #ff4c4c; font-weight: bold; border-radius: 8px; transition: opacity 0.5s ease; }
+    .event-log { flex: 1; overflow-y: auto; background: #000; border-radius: 8px; padding: 1em; font-family: 'Courier New', Courier, monospace; white-space: pre-wrap; box-shadow: inset 0 0 5px #333; font-size: 13px; }
+    .hidden { display: none; }
+    .tag { font-size: 0.75em; background: yellow; color: black; padding: 3px 7px; border-radius: 6px; margin-left: 5px; }
+    input, button { font-family: inherit; }
+    .status { font-size: 0.85em; margin-left: 10px; }
+    #history-modal, #xdr-modal { background: #222; padding: 20px; border-radius: 8px; color: white; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); box-shadow: 0 0 10px black; max-width: 500px; width: 90%; z-index: 999; }
+  </style>
+</head>
+
+<body>
+<div class="sidebar">
+  <h3>⛨ EDR Manager</h3>
+  <button onclick="toggleRuleForm()">➕ Add New Rule</button>
+  <button onclick="refreshRuleList()">✏️ View Rules</button>
+  <button onclick="deleteAllRules()">🗑️ Delete All Rules</button>
+  <button onclick="clearEvents()">🧹 Clear Events</button>
+
+  <h3 style="margin-top: 2em;">🛡️ XDR Manager</h3>
+  <button onclick="toggleXdrForm()">➕ Add New Rule</button>
+  <button onclick="viewXdrRules()">👁️ View Rules</button>
+  <button onclick="deleteAllXdrRules()">🗑️ Delete All Rules</button>
+
+  <div id="rule-form" class="hidden" style="margin-top: 1em;">
+    <input id="match-key" placeholder="match key (e.g. cmd)"><br>
+    <input id="match-values" placeholder="match values (comma separated)"><br>
+    <input id="tags" placeholder="tags (comma separated)"><br>
+    <input id="risk-level" type="number" min="1" max="3" placeholder="risk level (1-3)"><br>
+    <button onclick="addRule()">Save Rule</button>
+  </div>
+
+<div id="xdr-form" class="hidden" style="margin-top: 1em;">
+  <label><input type="radio" name="xdr-action" value="block" checked> Block</label>
+  <label><input type="radio" name="xdr-action" value="allow"> Allow</label><br><br>
+
+  <input id="xdr-ip" placeholder="IP Address (optional)"><br><br>
+  <input id="xdr-port" placeholder="Port or Port Range (e.g. 80 or 1000-2000)"><br><br>
+
+  <button onclick="addXdrRule()">Save Rule</button>
+</div>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+    <h1>Sentrilite Live System Events Dashboard</h1>
+    <div>
+      <button id="pause-btn" onclick="togglePause()">⏸️ Pause</button>
+      <button id="alert-btn" onclick="toggleAlerts()">🔔 Alerts On</button>
+      <button onclick="showAlertHistory()">📜 Alert History</button>
+      <span id="status" class="status">🟢 Connected</span>
+    </div>
+  </div>
+
+  <div class="counters">
+    <button id="count-red" class="risk-high" onclick="setFilterByRisk(1)">High Risk: 0</button>
+    <button id="count-orange" class="risk-medium" onclick="setFilterByRisk(2)">Medium: 0</button>
+    <button id="count-green" class="risk-low" onclick="setFilterByRisk(3)">Low: 0</button>
+  </div>
+
+  <div class="filters">
+    <input type="text" id="filter-uid" placeholder="Filter UID/username" oninput="renderEvents()">
+    <input type="text" id="filter-ip" placeholder="Filter IP" oninput="renderEvents()">
+    <input type="text" id="filter-cmd" placeholder="Filter CMD" oninput="renderEvents()">
+    <input type="text" id="filter-tag" placeholder="Filter TAG" oninput="renderEvents()">
+  </div>
+
+  <div id="alerts" class="alerts hidden"></div>
+
+  <h2>Live Events</h2>
+  <div id="event-log" class="event-log"></div>
+
+  <!-- Modal for past alerts -->
+  <div id="history-modal" class="hidden">
+    <h3>📜 Past Alerts</h3>
+    <div id="history-content" style="max-height: 300px; overflow-y: auto; margin-top: 10px;"></div>
+    <button onclick="clearAlertHistory()">🗑️ Clear History</button>
+    <button onclick="downloadAlertHistory()">⬇️ Download JSON</button>
+    <button onclick="hideAlertHistory()">❌ Close</button>
+  </div>
+
+  <!-- Modal for XDR Rules -->
+  <div id="xdr-modal" class="hidden">
+    <h3>🛡️ XDR Rules</h3>
+    <div id="xdr-content" style="max-height: 300px; overflow-y: auto; margin-top: 10px;"></div>
+    <button onclick="hideXdrRules()">❌ Close</button>
+  </div>
+</div>
+
+<script>
+let paused = false;
+let alertsEnabled = true;
+let events = [];
+let alertHistory = [];
+let currentRiskFilter = null;
+let ws;
+
+function connectWebSocket() {
+  ws = new WebSocket("ws://" + location.hostname + ":8765");
+
+  ws.onopen = () => {
+    document.getElementById("status").textContent = "🟢 Connected";
+    document.getElementById("status").style.color = "#2ecc71";
+  };
+
+  ws.onmessage = event => {
+    if (paused) return;
+    const data = JSON.parse(event.data);
+    if (data.type === "rule_list") { updateRuleList(data.rules); return; }
+    if (data.type === "xdr_rule_list") {
+      updateXdrRuleList(data.rules);
+      return;
+  }
+
+  // ⛔️ Skip any non-event messages
+  if (data.type && ["clear_alerts", "clear_alerts_ack", "rule_list", "xdr_rule_list", "health"].includes(data.type)) return;
+
+    events.push(data);
+    renderEvents();
+    maybeShowAlert(data);
+  };
+
+  ws.onclose = () => {
+    document.getElementById("status").textContent = "🔴 Disconnected";
+    document.getElementById("status").style.color = "#e74c3c";
+    setTimeout(connectWebSocket, 3000);
+  };
+
+  ws.onerror = (e) => {
+    console.error("WebSocket error:", e);
+    ws.close();
+  }
+}
+
+connectWebSocket();
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById("pause-btn").textContent = paused ? "▶️ Resume" : "⏸️ Pause";
+}
+
+function toggleAlerts() {
+  alertsEnabled = !alertsEnabled;
+  document.getElementById("alert-btn").textContent = alertsEnabled ? "🔔 Alerts On" : "🔕 Alerts Off";
+}
+
+function renderEvents() {
+  const log = document.getElementById("event-log");
+  log.innerHTML = "";
+  let red = 0, orange = 0, green = 0;
+
+  for (const data of events) {
+    if (!shouldDisplay(data)) continue;
+    const ts = new Date(data.timestamp * 1000).toISOString();
+    const tags = (data.tags || []).join(", ");
+    const tagsDisplay = tags ? ` [${tags}]` : "";
+    const portPart = data.port ? ` PORT=${data.port}` : "";
+
+    let cmd = data.display_cmd || data.cmd || "";
+    let arg = data.arg1 || "";
+    let line = `[${ts}] PID=${data.pid} UID=${data.uid} USER=${data.user || ""} COMM=${data.comm}`;
+    if (cmd) line += ` CMD=${cmd}`;
+    if (arg) line += ` ARG=${arg}`;
+    line += ` IP=${data.ip || "localhost"} TYPE=${data.msg_type_str}${portPart}${tagsDisplay}`;
+
+    if (data._ && data._ !== "ok") {
+        line += ` Reason: ${data._}`;   // show the real error reason
+    }
+
+    const div = document.createElement("div");
+    div.textContent = line;
+    div.className = data.risk_level === 1 ? "risk-high" : (data.risk_level === 2 ? "risk-medium" : "risk-low");
+    log.appendChild(div);
+
+    if (data.risk_level === 1) red++; else if (data.risk_level === 2) orange++; else green++;
+  }
+
+  document.getElementById("count-red").textContent = `High Risk: ${red}`;
+  document.getElementById("count-orange").textContent = `Medium: ${orange}`;
+  document.getElementById("count-green").textContent = `Low: ${green}`;
+
+  log.scrollTop = log.scrollHeight;
+}
+
+function maybeShowAlert(data) {
+  if (!alertsEnabled) return;
+  const alerts = document.getElementById("alerts");
+  let message = "";
+
+  const ipPart = data.ip ? `, IP=${data.ip}` : "";
+  const portPart = data.port !== undefined ? `, PORT=${data.port}` : "";
+  const cmdPart = data.cmd ? `, CMD=${data.cmd}` : "";
+  const pidPart = data.pid !== undefined ? `PID=${data.pid}` : "";
+
+  if (data.tags?.includes("intruder") && data.msg_type_str === "ACCEPT") {
+    message = `🚨 ALERT: Intruder connected${ipPart}${portPart}`;
+  } else if (data.tags?.includes("intruder") && data.tags?.includes("info-disclosure")) {
+    message = `🚨 ALERT: Intruder accessed sensitive file! ${pidPart}${cmdPart}${ipPart}${portPart}`;
+  } else if (data.tags?.includes("exfiltration")) {
+    message = `🚨 ALERT: Possible data exfiltration! ${pidPart}${cmdPart}${ipPart}${portPart}`;
+  } else if (data.tags?.includes("unexpected-service")) {
+    message = `🚨 ALERT: Unexpected service opened! ${pidPart}${cmdPart}${ipPart}${portPart}`;
+  }
+
+  if (message) {
+    alerts.textContent = message;
+    alerts.classList.remove("hidden");
+    alertHistory.push({ time: new Date().toISOString(), message });
+    setTimeout(() => { alerts.classList.add("hidden"); }, 3000);
+  }
+}
+
+function showAlertHistory() {
+  const modal = document.getElementById("history-modal");
+  const content = document.getElementById("history-content");
+  content.innerHTML = alertHistory.map(a => `[${a.time}] ${a.message}`).join("<br>");
+  modal.classList.remove("hidden");
+}
+
+function hideAlertHistory() {
+  document.getElementById("history-modal").classList.add("hidden");
+}
+
+function clearAlertHistory() {
+  alertHistory = [];
+  document.getElementById("history-content").innerHTML = "";
+
+  // Send request to server to clear alerts.json
+  ws.send(JSON.stringify({ type: "clear_alerts" }));
+}
+
+function downloadAlertHistory() {
+  const blob = new Blob([JSON.stringify(alertHistory, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "alert_history.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function shouldDisplay(data) {
+  if (currentRiskFilter && data.risk_level !== currentRiskFilter) return false;
+  const uidInput = document.getElementById("filter-uid").value.trim();
+  if (uidInput && !(data.uid?.toString().includes(uidInput) || (data.user || "").includes(uidInput))) return false;
+  if (filter("ip", data.ip)) return false;
+  if (filter("cmd", data.cmd)) return false;
+  if (filter("tag", data.tags)) return false;
+  return true;
+}
+
+function filter(type, value) {
+  const input = document.getElementById(`filter-${type}`).value;
+  if (!input) return false;
+  if (type === "tag") return !(value || []).includes(input);
+  return !(value || "").toString().includes(input);
+}
+
+function setFilterByRisk(level) {
+  currentRiskFilter = currentRiskFilter === level ? null : level;
+  renderEvents();
+}
+
+function toggleRuleForm() { document.getElementById("rule-form").classList.toggle("hidden"); }
+function toggleXdrForm() { document.getElementById("xdr-form").classList.toggle("hidden"); }
+function clearEvents() { events = []; renderEvents(); }
+function updateRuleList(rules) {
+  if (!rules.length) return alert("ℹ️ No rules defined.");
+  const list = rules.map((r, i) => `${i+1}. Match ${r.match_key} IN [${r.match_values.join(", ")}], Tags: [${r.tags.join(", ")}], Risk: ${r.risk_level}`).join("\n");
+  alert("📜 Current Rules:\n\n" + list);
+}
+function refreshRuleList() { ws.send(JSON.stringify({ type: "get_rules" })); }
+function addRule() {
+  const matchKey = document.getElementById("match-key").value.trim();
+  const matchValues = document.getElementById("match-values").value.split(",").map(v => v.trim()).filter(v => v);
+  const tags = document.getElementById("tags").value.split(",").map(v => v.trim()).filter(v => v);
+  const riskLevel = parseInt(document.getElementById("risk-level").value);
+
+  // Validation
+  if (!matchKey) {
+    alert("❌ Match key cannot be empty. Example: cmd, comm, arg1, ip");
+    return;
+  }
+  if (!matchValues.length) {
+    alert("❌ You must provide at least one match value.");
+    return;
+  }
+  if (![1, 2, 3].includes(riskLevel)) {
+    alert("❌ Risk level must be 1, 2, or 3.");
+    return;
+  }
+
+  const rule = {
+    type: "add_rule",
+    match_key: matchKey,
+    match_values: matchValues,
+    tags: tags,
+    risk_level: riskLevel
+  };
+
+  ws.send(JSON.stringify(rule));
+  alert("✅ Rule saved!");
+  refreshRuleList();
+  toggleRuleForm();
+}
+
+function deleteAllRules() { ws.send(JSON.stringify({ type: "delete_all_rules" })); refreshRuleList(); }
+function addXdrRule() {
+  const action = document.querySelector('input[name="xdr-action"]:checked').value; // "block" or "allow"
+  const ip = document.getElementById("xdr-ip").value.trim();
+  const port = document.getElementById("xdr-port").value.trim();
+
+  if (!ip && !port) {
+    alert("❌ Please specify at least an IP or a Port.");
+    return;
+  }
+
+  const value = { ip, port };
+
+  const newRule = {
+    type: "add_xdr_rule",
+    rule_type: action,  // <-- just "block" or "allow"
+    value: value
+  };
+
+  ws.send(JSON.stringify(newRule));
+  alert("✅ XDR Rule saved successfully!");
+  document.getElementById("xdr-form").classList.add("hidden");
+}
+
+function deleteAllXdrRules() {
+  if (!confirm("⚠️ Are you sure you want to delete all XDR rules?")) return;
+  ws.send(JSON.stringify({ type: "clear_xdr_rules" }));
+  alert("✅ All XDR rules cleared!");
+}
+
+function viewXdrRules() {
+  ws.send(JSON.stringify({ type: "get_xdr_rules" }));
+}
+
+function updateXdrRuleList(rules) {
+  if (!rules.length) {
+    alert("ℹ️ No XDR rules defined.");
+    return;
+  }
+
+  const list = rules.map((r, i) => {
+    const action = r.type === "block" ? "Block" : (r.type === "allow" ? "Allow" : "Unknown");
+    const ip = r.value?.ip || "Any IP";
+    const port = r.value?.port || "Any Port";
+
+    return `${i + 1}. [${action}] IP: ${ip}, Port: ${port}`;
+  }).join("\n");
+
+  alert("🛡️ Current XDR Rules:\n\n" + list);
+}
+
+
+
+</script>
+</body>
+</html>
+
