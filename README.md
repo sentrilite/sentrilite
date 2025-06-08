@@ -28,25 +28,22 @@ This ZIP bundle contains the lightweight eBPF-powered Sentrilite agent with buil
 - Python 3.8+
 - Root privileges (for loading eBPF programs)
 - Kernel with eBPF support (Linux 5.8+ recommended)
-
 ---
 
 ## ⚙️ General  Requirements
-Tool                    Purpose                                         How to Install
-bpftool:                Load eBPF programs and manage maps              sudo apt install bpftool (Ubuntu)
-python3, pip3           Run the websocket server (ws_server.py)         sudo apt install python3 python3-pip
-websockets              WebSocket server library                        pip3 install websockets
-libbpf & headers        Required by the kernel loader (trace_events)    Pre-installed on most modern distros (use bundled binary)
-nginx                   Required to view dashboard                      sudo apt install nginx
+Tool			Purpose						How to Install
+bpftool: 		Load eBPF programs and manage maps		sudo apt install bpftool (Ubuntu)
+python3, pip3		Run the websocket server (ws_server.py)		sudo apt install python3 python3-pip
+websockets		WebSocket server library			pip3 install websockets
+libbpf & headers	Required by the kernel loader (trace_events)	Pre-installed on most modern distros (use bundled binary)
+nginx			Required to view dashboard			sudo apt install nginx
 ---
 
 ## 🔐 Licensing
 
-The agent uses a **license.key** file tied to your machine’s MAC address.
-Please request a valid license from Sentrilite support if you don’t have one yet.
-
-Add this file to the same directory before launching.
-
+The project is currently using a trial license.key .
+If you don’t have a valid license, please contact Sentrilite Support to request one.
+Once obtained, place the license.key file in the same directory before launching the application.
 ---
 
 ## 🛠️ Installation Steps
@@ -93,7 +90,6 @@ Once uploaded correctly, Sentrilite agent will monitor and show status/alerts/AI
 for these servers.
 
 For more detail information, refer to dashboard_usage.README
-
 ---
 
 ## 🛠️ Un-installation Steps
@@ -102,7 +98,6 @@ Run the following commands as root.
 
 sudo rm -f /sys/fs/bpf/events /sys/fs/bpf/bpf_data
 sudo rm -rf /sys/fs/bpf/trace_syscall
-
 ---
 
 Support
