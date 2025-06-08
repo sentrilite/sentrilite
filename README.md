@@ -1,5 +1,8 @@
 # Sentrilite: Redefining EDR/XDR Through Observability, AI-LLM insights and Real-Time Response
 
+A programmable observability layer for Linux systems — monitor files, users, processes, ports,
+or IPs with custom rules, and turn kernel-level activity into real-time reports and insights.
+
 Thank you for choosing **Sentrilite** for advanced lightweight server and endpoint monitoring.
 The README covers Agent and Kernel Modules - installation guide.
 Website: https://sentrilite.com
@@ -55,6 +58,7 @@ Once obtained, place the license.key file in the same directory before launching
 
 ## 🛠️ Installation Steps
 
+```
 1. **Unzip the bundle:**
 
 unzip sentrilite_agent_bundle.zip
