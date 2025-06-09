@@ -11,6 +11,9 @@ Contact: info@sentrilite.com
 This ZIP bundle contains the lightweight eBPF-powered Sentrilite agent with built-in risk scoring,
 license validation, and real-time main and server dashboard support.
 
+Main Dashboard: https://youtu.be/16BvgmfiYzQ
+Server Dashboard: https://youtu.be/j_uss47anZs
+
 ---
 
 ## 📦 Contents of this Bundle
