@@ -1,0 +1,897 @@
+<!--
+Copyright (c) 2025 Sentrilite, Inc. All rights reserved.
+
+This software is the confidential and proprietary information of
+Sentrilite ("Confidential Information"). You shall not
+disclose such Confidential Information and shall use it only
+in accordance with the terms of the license agreement you entered
+into with Sentrilite.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sentrilite Main Dashboard</title>
+  <!-- script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script -->
+</head>
+<style>
+  :root {
+    --primary: #00ff99;
+    --secondary: #00bfff;
+    --bg: #000000;
+    --card-bg: #101a2b;
+    --text: #e6f1ff;
+    --muted: #a8b2d1;
+    --border: rgba(0, 255, 153, 0.15);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  header {
+    background: linear-gradient(90deg, #000 70%, #00bfff22 100%);
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  header span {
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(0, 255, 153, 0.3);
+  }
+
+  button {
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  button:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(0, 255, 153, 0.2);
+  }
+
+  .primary-button {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: var(--bg);
+    border: none;
+    font-weight: 600;
+  }
+
+  .primary-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(0, 255, 153, 0.3);
+  }
+
+  #upload-section {
+    background: linear-gradient(120deg, #000 60%, #00bfff11 100%);
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .container {
+    display: flex;
+    flex: 1;
+    background: linear-gradient(120deg, #000 60%, #00bfff11 100%);
+  }
+
+  aside {
+    width: 280px;
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem;
+  }
+
+  .rule-box {
+    margin-bottom: 2rem;
+  }
+
+  .rule-box h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 0.625rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(0, 255, 153, 0.1);
+  }
+
+  main {
+    flex: 1;
+    padding: 1.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  th {
+    background: rgba(0, 255, 153, 0.05);
+    padding: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--border);
+    color: var(--primary);
+  }
+
+  td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tr:hover {
+    background: rgba(0, 255, 153, 0.02);
+  }
+
+  .online { 
+    color: var(--primary); 
+    font-weight: bold;
+  }
+
+  .offline { 
+    color: #e74c3c; 
+    font-weight: bold;
+  }
+
+  .critical { 
+    color: #f39c12; 
+    font-weight: bold;
+  }
+
+  .none { 
+    color: var(--muted);
+  }
+
+  #insight-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    max-width: 600px;
+    width: 90%;
+    display: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+  }
+
+  #insight-popup h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+
+  #insight-content {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 1rem 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: var(--primary);
+  }
+
+  footer {
+    background: var(--card-bg);
+    padding: 1rem;
+    text-align: center;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* Checkbox styling */
+  input[type="checkbox"] {
+    accent-color: var(--primary);
+  }
+
+  /* Radio button styling */
+  input[type="radio"] {
+    accent-color: var(--primary);
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 1024px) {
+    .container {
+      flex-direction: column;
+    }
+    
+    aside {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+
+  @media (max-width: 768px) {
+    header {
+      padding: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    
+    header span {
+      font-size: 1.25rem;
+    }
+    
+    main {
+      padding: 1rem;
+    }
+    
+    th, td {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+<body>
+<header>
+  <span>Sentrilite: Real-Time System Audit & Observability</span>
+<button onclick="downloadHumanReport()" style="
+  font-size: 1.0rem;
+  padding: 4px 8px;
+  background: linear-gradient(90deg, #00cc7a, #0099cc);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 1em;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 255, 153, 0.15);
+">
+  📄 Download PDF Report
+</button>
+
+<a href="#" id="download-link" style="font-size: 15px;" onclick="generateCombinedAlerts(); return false;">
+  📁 Download Combined Alerts (JSON)
+</a>
+
+
+</header>
+
+<div id="upload-section" style="position: relative; margin-bottom: 10px;">
+
+  <!-- Centered upload controls -->
+  <div style="text-align: center;">
+    <input type="file" id="serverFile" accept=".txt" />
+    <button onclick="uploadServers()">Upload Server List</button>
+    <button onclick="exportDashboard()">Download Dashboard</button>
+    <label style="margin-left: 1em;">
+      <input type="checkbox" id="checkAll" onchange="toggleAllServers(this)">
+      Select All
+    </label>
+  </div>
+
+  <!-- Absolutely positioned right-aligned link -->
+  <a href="#" onclick="clearAllCriticalAlerts(); return false;"
+     style="position: absolute; top: 0; right: 0; font-size: 15px; text-decoration: underline; color: #c00;">
+    🧹 Clear All Alerts
+  </a>
+</div>
+
+
+</div>
+
+
+<div class="container">
+  <aside>
+    <div class="rule-box">
+      <h3>⛨ Create Rule</h3>
+      <input id="edr-key" placeholder="match_key (e.g. cmd)" />
+      <input id="edr-values" placeholder="match_values (comma separated)" />
+      <input id="edr-tags" placeholder="tags (comma separated)" />
+      <input id="edr-risk" type="number" min="1" max="3" placeholder="risk level" />
+      <input id="edr-tag-filter" placeholder="server_tag (default: all)" />
+      <button onclick="applyEDRRule()">Apply to Selected</button>
+    </div>
+    <div class="rule-box">
+      <h3>🛡️ Network Rule</h3>
+      <label><input type="radio" name="xdr-action" value="block" checked /> Block</label>
+      <label><input type="radio" name="xdr-action" value="allow" /> Allow</label>
+      <input id="xdr-ip" placeholder="IP Address (optional)" />
+      <input id="xdr-port" placeholder="Port or Range (e.g. 80 or 1000-2000)" />
+      <input id="xdr-tag-filter" placeholder="server_tag (default: all)" />
+      <button onclick="applyXDRRule()">Apply to Selected</button>
+    </div>
+  </aside>
+
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>Server IP</th>
+          <th>Status</th>
+          <th>Alerts</th>
+          <th>Groups</th>
+          <th>Dashboard</th>
+          <th>AI Insights</th>
+        </tr>
+      </thead>
+      <tbody id="serverTableBody"></tbody>
+    </table>
+  </main>
+</div>
+
+<footer>
+  © 2025 Sentrilite Inc. All rights reserved. Contact: info@Sentrilite.com
+</footer>
+
+<div id="insight-popup">
+  <h3>🔍 LLM Insight</h3>
+  <div id="insight-content"></div>
+  <button onclick="document.getElementById('insight-popup').style.display='none'">❌ Close</button>
+</div>
+<script src="jspdf.umd.min.js"></script>
+<script>window.jsPDF = window.jspdf.jsPDF;</script>
+<script>
+const insightsCache = {};   // 🧠 { ip: { text: "...", timestamp: 123456 } }
+const alertsSnapshot = {};  // 🧠 { ip: "alerts-stringified" }
+
+function toggleAllServers(checkbox) {
+  document.querySelectorAll(".select-server").forEach(cb => cb.checked = checkbox.checked);
+}
+
+function uploadServers() {
+  const file = document.getElementById('serverFile').files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const lines = reader.result.split('\n').map(line => line.trim()).filter(Boolean);
+    const tbody = document.getElementById("serverTableBody");
+    tbody.innerHTML = "";
+
+    lines.forEach(line => {
+      const [ip, group = ""] = line.split(',').map(x => x.trim());
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input type="checkbox" class="select-server" data-ip="${ip}" /></td>
+        <td>${ip}</td>
+        <td id="status-${ip}">⏳</td>
+        <td id="alert-${ip}">⏳</td>
+        <td contenteditable="true" id="group-${ip}">${group}</td>
+        <td><a href="http://${ip}/dashboard.html" target="_blank">Open</a></td>
+        <td>
+          <a href="#" onclick="showInsight('${ip}')" id="insight-link-${ip}">View</a> |
+          <a href="#" onclick="refreshInsightManually('${ip}')" style="color: #00c3ff;">🔄</a>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    refreshAll();
+    setInterval(refreshAll, 5000); // ⏲️ Re-check health every 5 seconds
+  };
+  reader.readAsText(file);
+}
+
+function refreshAll() {
+  document.querySelectorAll(".select-server").forEach(cb => {
+    const ip = cb.dataset.ip;
+    const ws = new WebSocket(`ws://${ip}:8765`);
+    let isHealthy = false;
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: "health" }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "health") {
+          isHealthy = true;
+          document.getElementById(`status-${ip}`).innerHTML = `<span class="online">Online</span>`;
+
+          const alertText = (data.alert_status === "Critical")
+            ? `<span class="critical">Critical</span>`
+            : `<span class="none">None</span>`;
+          document.getElementById(`alert-${ip}`).innerHTML = alertText;
+
+          if (data.alert_status === "Critical") {
+            fetchAlertsAndInsights(ip);
+          } else {
+            delete insightsCache[ip]; // No critical alerts, remove old insight
+          }
+        }
+      } catch (err) {
+        console.error("WebSocket parsing error:", err);
+      } finally {
+        ws.close(); // ✅ Close only after finished parsing
+      }
+    };
+
+    ws.onerror = () => {
+      document.getElementById(`status-${ip}`).innerHTML = `<span class="offline">Unreachable</span>`;
+      document.getElementById(`alert-${ip}`).innerHTML = `<span class="none">Unknown</span>`;
+    };
+
+    ws.onclose = () => {
+      if (!isHealthy) { // ✅ Only mark offline if never got a good message
+        document.getElementById(`status-${ip}`).innerHTML = `<span class="offline">Unreachable</span>`;
+        document.getElementById(`alert-${ip}`).innerHTML = `<span class="none">Unknown</span>`;
+      }
+    };
+  });
+}
+
+function fetchAlertsAndInsights(ip, force = false) {
+  const ws = new WebSocket(`ws://${ip}:8765`);
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ type: "get_alerts" }));
+  };
+
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "alert_list" && Array.isArray(data.alerts)) {
+        const newSnapshot = JSON.stringify(data.alerts);
+
+        if (!force && alertsSnapshot[ip] === newSnapshot) {
+          console.log(`ℹ️ No change in alerts for ${ip}. Skipping LLM refresh.`);
+          ws.close();
+          return;
+        }
+
+        alertsSnapshot[ip] = newSnapshot; // 📦 Save new alerts snapshot
+
+        const alertText = data.alerts.map(a => `[${a.time}] ${a.message}`).join("\n");
+
+        const prompt = `### Instruction:\nYou are a cybersecurity expert. Summarize and assess the following alerts for server ${ip}. Indicate severity and suggest remediation.\n\n### Input:\n${alertText}\n\n### Response:\n`;
+
+        fetch('http://ec2-3-144-169-112.us-east-2.compute.amazonaws.com:3000/completion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: prompt,
+            n_predict: 512,
+            temperature: 0.2,
+            stream: false
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.content) {
+            insightsCache[ip] = { text: data.content, timestamp: Date.now() };
+            console.log(`✅ Insight updated for ${ip}`);
+          } else {
+            console.error("⚠️ LLM server returned no content");
+          }
+        })
+        .catch(err => console.error("❌ LLM fetch error:", err));
+      }
+    } catch (err) {
+      console.error("WebSocket alert fetch error:", err);
+    } finally {
+      ws.close(); // ✅ Always close after processing
+    }
+  };
+
+  ws.onerror = (err) => {
+    console.error(`❌ WebSocket error fetching alerts from ${ip}:`, err);
+  };
+}
+
+function showInsight(ip) {
+  const insight = insightsCache[ip]?.text || "No insights available yet.";
+
+  const contentDiv = document.getElementById("insight-content");
+  contentDiv.innerHTML = `
+    <div style="margin-bottom: 1em;">${insight}</div>
+    <button onclick="refreshInsightManually('${ip}')" style="background: var(--highlight); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">🔄 Refresh Insight</button>
+  `;
+
+  document.getElementById("insight-popup").style.display = "block";
+}
+
+function refreshInsightManually(ip) {
+  fetchAlertsAndInsights(ip, true); // 🔥 Always force refresh
+}
+
+function applyRule(rule, tagFilter, isXDR = false) {
+  const allServers = Array.from(document.querySelectorAll(".select-server"));
+  const tag = (tagFilter || "").trim().toUpperCase();
+
+  const targets = allServers.filter(cb => {
+    const ip = cb.dataset.ip;
+    const cell = document.getElementById(`group-${ip}`);
+    const groupText = cell?.textContent || "";
+    const groupTags = groupText.split(',').map(t => t.trim().toUpperCase()).filter(Boolean);
+    const matchesGroup = !tag || groupTags.includes(tag);
+    return cb.checked || matchesGroup;
+  }).map(cb => cb.dataset.ip);
+
+  if (!targets.length) {
+    const selectedGroups = allServers.map(cb => {
+      const ip = cb.dataset.ip;
+      const cell = document.getElementById(`group-${ip}`);
+      return `IP=${ip}, Group=${cell?.textContent.trim() || '(none)'}`;
+    });
+    console.log(`No matching servers for ${isXDR ? 'XDR' : 'EDR'} Rule. Groups:`);
+    selectedGroups.forEach(g => console.log(g));
+    return;
+  }
+
+  alert(`📋 Dispatching rule to servers: ${targets.join(', ')}`);
+
+  targets.forEach(ip => {
+    const ws = new WebSocket(`ws://${ip}:8765`);
+    ws.onopen = () => {
+      ws.send(JSON.stringify(rule));
+      ws.close();
+    };
+  });
+
+  alert(`✅ ${isXDR ? 'XDR' : 'EDR'} Rule dispatched to ${targets.length} server(s).`);
+}
+
+function applyEDRRule() {
+  const key = document.getElementById("edr-key").value.trim();
+  const values = document.getElementById("edr-values").value.split(",").map(v => v.trim()).filter(Boolean);
+  const tags = document.getElementById("edr-tags").value.split(",").map(v => v.trim()).filter(Boolean);
+  const risk = parseInt(document.getElementById("edr-risk").value);
+  const tagFilter = document.getElementById("edr-tag-filter").value.trim();
+
+  if (!key || !values.length || ![1, 2, 3].includes(risk)) {
+    return alert("❌ Please provide valid EDR rule parameters.");
+  }
+
+  const rule = {
+    type: "add_rule",
+    match_key: key,
+    match_values: values,
+    tags: tags,
+    risk_level: risk
+  };
+
+  applyRule(rule, tagFilter);
+}
+
+function applyXDRRule() {
+  const action = document.querySelector('input[name="xdr-action"]:checked').value;
+  const ipVal = document.getElementById("xdr-ip").value.trim();
+  const port = document.getElementById("xdr-port").value.trim();
+  const tagFilter = document.getElementById("xdr-tag-filter").value.trim();
+
+  if (!ipVal && !port) return alert("Please specify at least IP or Port.");
+
+  const rule = {
+    type: "add_xdr_rule",
+    rule_type: action,
+    value: { ip: ipVal, port }
+  };
+
+  applyRule(rule, tagFilter, true);
+}
+
+function exportDashboard() {
+  const rows = document.querySelectorAll("#serverTableBody tr");
+  const lines = [];
+
+  rows.forEach(row => {
+    const ip = row.querySelector(".select-server")?.dataset.ip;
+    const group = document.getElementById(`group-${ip}`)?.textContent.trim();
+    lines.push(`${ip}${group ? ',' + group : ''}`);
+  });
+
+  const blob = new Blob([lines.join('\n')], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "dashboard_export.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function downloadHumanReport() {
+  const doc = new jsPDF();
+  const now = new Date().toLocaleString();
+  let y = 15;
+
+  doc.setFontSize(18);
+  doc.setTextColor(40, 40, 40);
+  doc.text("Sentrilite Alert Summary Report", 10, y);
+  y += 8;
+
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Generated on: ${now}`, 10, y);
+  y += 10;
+
+  const rows = Array.from(document.querySelectorAll(".select-server"));
+
+  const alertResults = await Promise.all(rows.map(async row => {
+    const ip = row.dataset.ip;
+    try {
+      const alerts = await fetchAlertsFromServer(ip, 3000);
+      return { ip, alerts, success: true };
+    } catch {
+      return { ip, alerts: [], success: false };
+    }
+  }));
+
+  for (const row of rows) {
+    const ip = row.dataset.ip;
+    const group = document.getElementById(`group-${ip}`)?.textContent.trim() || "unknown";
+    const insight = insightsCache[ip]?.text || "No AI insight available.";
+    const result = alertResults.find(r => r.ip === ip);
+    if (!result || !result.success) continue;
+
+    const alerts = result.alerts;
+
+    // Server Header
+    doc.setFillColor(220, 230, 250);
+    doc.setDrawColor(180, 180, 180);
+    doc.rect(10, y - 5, 190, 10, 'FD');
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(33, 33, 33);
+    doc.text(`Server: ${ip}   |   Group: ${group}`, 12, y);
+    y += 12;
+
+    // Table Headers
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'bold');
+    doc.setFillColor(240, 240, 240);
+    doc.rect(12, y - 4, 186, 8, 'F');
+    doc.text("Timestamp", 14, y);
+    doc.text("Message", 60, y);
+    y += 6;
+
+    doc.setFont(undefined, 'normal');
+
+    if (alerts.length > 0) {
+        for (const a of alerts) {
+          const ts = a.time || a.timestamp || "Unknown time";  // ✅ use 'time' field
+          const msg = a.message || "Unknown event";
+          const risk = a.risk_level || "unknown";
+          const color = getRiskColor(risk);
+      
+          const splitMsg = doc.splitTextToSize(msg, 130); // wrap message text
+      
+          // Timestamp (always black)
+          doc.setTextColor(0, 0, 0);
+          doc.text(ts, 14, y);
+      
+          // Message (color-coded)
+          doc.setTextColor(...color);
+          doc.text(splitMsg, 60, y);
+      
+          y += (splitMsg.length * 6);
+      
+          if (y > 270) {
+            doc.addPage();
+            y = 15;
+          }
+       }
+    } else {
+      doc.setTextColor(150, 150, 150);
+      doc.text("No alerts found.", 14, y);
+      y += 6;
+    }
+
+    // AI Insight Box
+    y += 4;
+    const insightText = doc.splitTextToSize(insight, 170);
+    doc.setFillColor(245, 245, 245);
+    doc.setDrawColor(220, 220, 220);
+    doc.rect(12, y, 180, insightText.length * 6 + 8, 'FD');
+    doc.setFont(undefined, 'italic');
+    doc.setTextColor(80, 80, 80);
+    doc.text("AI Insight:", 14, y + 6);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(60, 60, 60);
+    doc.text(insightText, 14, y + 12);
+    y += insightText.length * 6 + 12;
+
+    if (y > 270) {
+      doc.addPage();
+      y = 15;
+    }
+  }
+
+  doc.save("Sentrilite_Report.pdf");
+}
+
+
+function getRiskColor(level) {
+  const risk = String(level || "").toLowerCase();
+  switch (risk) {
+    case "critical":
+    case "high":
+    case "1": return [200, 0, 0];       // 🔴 Red
+    case "medium":
+    case "2": return [255, 140, 0];     // 🟠 Orange
+    case "low":
+    case "3": return [0, 128, 0];       // 🟢 Green
+    default: return [120, 120, 120];    // ⚫ Gray
+  }
+}
+
+function getRiskBullet(level) {
+  const risk = String(level || "").toLowerCase();
+  switch (risk) {
+    case "critical":
+    case "high":
+    case "1": return "🔴";
+    case "medium":
+    case "2": return "🟠";
+    case "low":
+    case "3": return "🟢";
+    default: return "⚫";
+  }
+}
+
+async function fetchAlertsFromServer(ip, timeoutMs = 3000) {
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(`ws://${ip}:8765`);
+    let resolved = false;
+
+    const timeout = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        ws.close();
+        reject(new Error(`Timeout fetching alerts from ${ip}`));
+      }
+    }, timeoutMs);
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: "get_alerts" }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "alert_list" && Array.isArray(data.alerts)) {
+          clearTimeout(timeout);
+          resolved = true;
+          resolve(data.alerts);
+        } else {
+          clearTimeout(timeout);
+          resolved = true;
+          resolve([]);
+        }
+      } catch {
+        clearTimeout(timeout);
+        resolved = true;
+        resolve([]);
+      } finally {
+        ws.close();
+      }
+    };
+
+    ws.onerror = () => {
+      if (!resolved) {
+        clearTimeout(timeout);
+        resolved = true;
+        reject(new Error(`WebSocket error from ${ip}`));
+      }
+    };
+  });
+}
+
+async function generateCombinedAlerts() {
+  const rows = document.querySelectorAll(".select-server");
+  const combinedAlerts = [];
+
+  await Promise.all(Array.from(rows).map(async row => {
+    const ip = row.dataset.ip;
+    try {
+      const alerts = await fetchAlertsFromServer(ip, 3000);
+      alerts.forEach(a => combinedAlerts.push({ server: ip, ...a }));
+    } catch (err) {
+      console.warn(`Skipping unreachable server: ${ip}`);
+    }
+  }));
+
+  const blob = new Blob([JSON.stringify(combinedAlerts, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const download = document.createElement("a");
+  download.href = url;
+  download.download = "combined_alerts.json";
+  download.style.display = "none";
+  document.body.appendChild(download);
+  download.click();
+  document.body.removeChild(download);
+  URL.revokeObjectURL(url);
+}
+
+function clearAllCriticalAlerts() {
+  const rows = document.querySelectorAll(".select-server");
+
+  rows.forEach(row => {
+    const ip = row.dataset.ip;
+    const alertCell = document.getElementById(`alert-${ip}`);
+    const isCritical = alertCell?.textContent.includes("Critical");
+
+    if (isCritical) {
+      const ws = new WebSocket(`ws://${ip}:8765`);
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ type: "clear_alerts" }));
+        ws.close();
+      };
+      ws.onerror = () => {
+        console.warn(`❌ Failed to connect to ${ip} to clear alerts.`);
+      };
+    }
+  });
+
+  alert("🧹 Clear request sent to all servers with critical alerts.");
+}
+
+
+</script>
+
+</body>
+</html>
+
