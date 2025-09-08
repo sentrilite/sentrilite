@@ -37,7 +37,7 @@ MAP_ID=$(sudo ./bpftool map show | grep 'bpf_data' | awk '{print $1}' | tr -d ':
 
 if [ -n "$MAP_ID" ]; then
     sudo mkdir -p /sys/fs/bpf/trace_syscall
-    sudo bpftool map pin id "$MAP_ID" /sys/fs/bpf/trace_syscall/bpf_data
+    sudo ./bpftool map pin id "$MAP_ID" /sys/fs/bpf/trace_syscall/bpf_data
     echo "✅ Pinned bpf_data at /sys/fs/bpf/trace_syscall/bpf_data"
 else
     echo "❌ Could not find bpf_data"
@@ -45,4 +45,3 @@ else
 fi
 
 echo "✅ BPF tracepoints and maps successfully loaded and pinned."
-

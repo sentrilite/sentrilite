@@ -1,20 +1,37 @@
-# Sentrilite – Open source, Lightweight, Real time, Kernel level System Observability and Audit tool (Powered by eBPF + AI)
+# Sentrilite — Cloud-Native, AI-Powered Lightweight, Real-Time System Observability & Security
 
-A programmable observability layer for Linux systems — monitor files, users, processes, ports,
-or IPs with custom rules, and turn kernel-level activity into real-time reports and insights.
+Sentrilite is a Cloud-Native Programmable Observability layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
+Hybrid & multi-cloud ready: Works the same across public clouds and on-prem—EKS, GKE, AKS, vanilla Kubernetes, bare-metal, and edge—so you get a consistent, low-overhead security and observability layer for hybrid/multi-cloud environments all managed from a single dashboard.
 
-Thank you for choosing **Sentrilite** for advanced lightweight server and endpoint monitoring.
-The README covers Agent and Kernel Modules - installation guide.
+In Kubernetes, Sentrilite runs as a privileged DaemonSet on every node (no changes to your workloads). Each agent uses hostPID/hostNetwork to observe container processes, then enriches events with pod metadata (namespace, pod, container, UID) by correlating cgroups with the API server. This lets you see all the activity at the container/pod level:
+
+- Seamless install & upgrade: kubectl apply the DaemonSet (sentrilite.yaml) and you’re done; rolling updates pick up new rules and images cluster-wide.
+- Process visibility: Capture commands and args (execve) per container/pod with user, PID/PPID, and image context; trigger rules like “alert on cat /etc/passwd” or “block high-risk binaries.”
+- File activity: Match sensitive file paths (config, keys, tokens) using rule packs; flag exfil patterns and privilege-escalation attempts.
+- Network activity: Trace socket opens and outbound/inbound connects/binds; create rules for destinations IP, ports, or CIDRs (e.g., “deny egress to 1.2.3.0/24:443”).
+- Live operations UI: Watch streaming events per node/pod, plus live node/server health and OOMKilled notices; filter by namespace/pod/container in real time.
+- Custom rules & risk: Declarative JSON rules tag and score events; high-risk findings become alerts with clear, human-readable summaries that include k8s context.
+- Reporting: Generate rich summary reports (e.g., PDF/CSV) showing timelines, risky commands, and per-namespace insights for audits and incident reviews.
+- Real-time security posture: Optional controls (like iptables-backed allow/deny rules) help you respond quickly to suspicious network behavior.
+- LLM-powered insights: automatically summarize trends, explain anomalies, and suggest remediation/rules from live telemetry and alerts.
+
+In summary, Sentrilite gives you container-aware process, file, and network visibility with minimal overhead, live dashboards for fast triage, and exportable reports for compliance and forensics—all from a single, node-level DaemonSet.
+
 Website: https://sentrilite.com
-Contact: info@sentrilite.com
+Email: info@sentrilite.com
+GitHub: https://github.com/sentrilite/sentrilite
+Demo: https://youtu.be/rRexG-f6YFM
 
-This ZIP bundle contains the lightweight eBPF-powered Sentrilite agent with built-in risk scoring,
-license validation, and real-time main and server dashboard support.
+---
 
-Main Dashboard demo: https://youtu.be/16BvgmfiYzQ
-Server Dashboard demo: https://youtu.be/j_uss47anZs
-github: https://github.com/sentrilite/sentrilite
-youtube demo: https://youtu.be/rRexG-f6YFM
+## ✨ Key Features
+
+- Multi-Cloud/On-Prem visibility and management from a single dashboard.
+- eBPF syscall & network visibility
+- Real-time dashboards (Nginx + WebSocket server)
+- Custom rules with risk scoring and alerting
+- Kubernetes enrichment (namespace/pod/container/UID) when running as a DaemonSet
+- OOMKilled alerts and pod watchers (best effort if K8s APIs available)
 
 ---
 
@@ -24,14 +41,19 @@ youtube demo: https://youtu.be/rRexG-f6YFM
 |-------------------|------------------------------------------
 | `trace_syscall.o` | eBPF kernel object for syscall monitoring
 | `install.sh`      | Script to load the ebpf kernel module
+| `unload_bpf.sh`   | Script to unload the ebpf kernel module
 | `trace_events`    | Userspace program for network/socket activity
 | `sentrilite`      | Go websocket server that forwards live events to browser dashboard
+| `main.html`       | Main frontend UI for viewing node status
 | `dashboard.html`  | Local frontend UI for viewing live events
 | `net.conf`        | Configuration file
+| `sentrilite.yaml` | Sentrilite daemonset manifest to install on Kubernetes cluster
 | `bpftool`         | Tool to load and attach kernel tracepoints. Source: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-| `license.key`     | License key file
+| `LICENSE.bpftool` | GPL-2.0 License for bpftool. Source: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
+| `license.key`     | Sentrilite License key file
+| `LICENSE.txt`     | Sentrilite License Agreement
 | `install.README`  | This installation guide
-| `LICENSE.txt`     | License Agreement
+| `dashboard.README`| Dashboard usage guide
 
 ---
 
@@ -40,11 +62,13 @@ youtube demo: https://youtu.be/rRexG-f6YFM
 - Ubuntu 20.04+
 - Root privileges (for loading eBPF programs)
 - Kernel with eBPF support (Linux 5.8+ recommended)
+- Ports: 80 (dashboard), 8765 (WebSocket)
+- Kubernetes (optional): Cluster access with ability to run a privileged DaemonSet
 
 ---
 
 ## ⚙️ General  Requirements
-- Tool                    Purpose                                         How to Install
+
 - bpftool:                Load eBPF programs and manage maps              sudo apt install bpftool (Ubuntu)
 - libbpf & headers        Required by the kernel loader (trace_events)    Pre-installed on most modern distros (use bundled binary)
 - nginx                   Required to view dashboard                      sudo apt install nginx
@@ -54,33 +78,65 @@ youtube demo: https://youtu.be/rRexG-f6YFM
 ## 🔐 Licensing
 
 The project is currently using a trial license.key .
-Once obtained, place the license.key file in the same directory before launching the application.
 
 ---
 
 ## 🛠️ Installation Steps
 
+For Kubernetes Cluster: EKS/AKS/GKE or Private Kubernetes Cluster
+
 ```
-1. Install System requirements:
+kubectl apply -f sentrilite.yaml
+kubectl -n kube-system get pods -l app=sentrilite-agent -o wide
+kubectl get nodes | awk '!/NAME/{print $1,",K8s"}' > nodes.txt
 
-Open ports 8765 and 3000
+# Port forward
+POD=$(kubectl -n kube-system get pod -l app=sentrilite-agent -o name | head -n1)
+kubectl -n kube-system port-forward "$POD" 8080:80 8765:8765
 
-2. **Unzip the bundle:**
+Example Alert Message:
+
+  {
+    "time": "2025-09-07 14:55:22",
+    "type": "high_risk",
+    "message": "root ran a high-risk command '/bin/sudo' from IP 10.0.0.1.",
+    "pid": "1546794",
+    "cmd": "/bin/ls",
+    "args": "",
+    "ip": "127.0.0.1",
+    "risk_level": 1,
+    "tags": [
+      "privilege-escalation"
+    ],
+    "k8s_namespace": "default",
+    "k8s_pod": "debug-shell",
+    "k8s_container": "shell",
+    "k8s_pod_uid": "092d4607-2fd3-4db7-aba5-812d0bcd4e06"
+  }
+
+```
+
+Open main.html and upload the file nodes.txt
+
+For Non-Kubernetes Linux based Cluster
+
+```
+1. **Unzip the bundle:**
 
 unzip sentrilite_agent_bundle.zip
 cd sentrilite
 
-3. Load the bpf program:
+2. Load the bpf program:
 sudo ./install.sh
 
-4. Open net.conf and configure:
+3. Open net.conf and configure:
 license_file=license.key    # Path to your license file
 iface=enX0 # your ethernet or your network interface
 
-5. Launch the Server:
+4. Launch the Server:
 sudo ./sentrilite
 
-7. Open the Dashboard:
+5. Open the Dashboard:
 Copy the dashboard.html to /var/www/html or web root directory.
 Open dashboard.html in your browser: http://<YOUR-SERVER-IP>/dashboard.html
 You should see live events appear in real-time.
@@ -88,27 +144,53 @@ You should see live events appear in real-time.
 Log format in the Web UI:
 [2025-04-14T00:12:32.008Z] PID=1234 COMM=ssh CMD=/bin/bash ARG= IP=127.0.0.1 TYPE=EXECVE
 
-8. Open the Main Dashboard:
+6. Open the Main Dashboard:
 Copy the main.html to /var/www/html on your main admin server.
 Open the main.html in your browser: http://<YOUR-SERVER-IP>/main.html
 Click choose file and select a file containing your server lists.
 Example file format:
 Server_1_ip_address,prod
 Server_2_ip_address,test
+```
 
 Once uploaded correctly, Sentrilite agent will monitor and show status/alerts/AI insights
 for these servers.
 
-For more detail information, refer to dashboard_usage.README
+For more detail information, refer to dashboard.README
+
+---
+
+# Configuration
+
+- license.key — place at /etc/sentrilite/license.key (baked in image or mounted as Secret).
+- net.conf — network config, placed at /etc/sentrilite/net.conf (baked in image or mounted as ConfigMap).
+- Rule files (rules.json, sensitive_files.json, xdr_rules.json, alerts.json) reside in the working dir; rules can be managed via the dashboard.
+
+---
+
+# Alerts & K8s Enrichment
+
+- Events include (when available): k8s_namespace, k8s_pod, k8s_container, k8s_pod_uid.
+- OOMKilled alerts and pod watchers run best-effort when the agent can access K8s APIs.
 
 ---
 
 ## 🛠️ Un-installation Steps
 
+For Kubernetes Cluster: EKS/AKS/GKE or Private Kubernetes Cluster
+
+```
+kubectl -n kube-system delete ds/sentrilite-agent
+# (Optional) If pods hang in Terminating:
+kubectl -n kube-system delete pod -l app=sentrilite-agent --force --grace-period=0
+```
+
+For Non-Kubernetes Linux based Cluster
 Run the following commands as root.
 
-sudo rm -f /sys/fs/bpf/events /sys/fs/bpf/bpf_data
-sudo rm -rf /sys/fs/bpf/trace_syscall
+```
+sudo ./unload_bpf.sh
+```
 
 ---
 
