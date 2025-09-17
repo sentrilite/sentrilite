@@ -180,28 +180,43 @@ function renderEvents() {
 
   for (const data of events) {
     if (!shouldDisplay(data)) continue;
-    const ts = new Date(data.timestamp * 1000).toISOString();
+
+    const ts = new Date((data.timestamp || 0) * 1000).toISOString();
     const tags = (data.tags || []).join(", ");
     const tagsDisplay = tags ? ` [${tags}]` : "";
     const portPart = data.port ? ` PORT=${data.port}` : "";
 
+    // NEW: read K8s enrichment keys from payload (underscore JSON keys)
+    const ns   = data.k8s_namespace || "";
+    const pod  = data.k8s_pod || "";
+    const ctr  = data.k8s_container || "";
+    const uid  = data.k8s_pod_uid || "";
+    const k8sPart = (ns || pod || ctr || uid)
+      ? ` [k8s ns=${ns || "-"} pod=${pod || "-"} ctr=${ctr || "-"} uid=${uid ? uid.slice(0,12) + "…" : "-"}]`
+      : "";
+
     let cmd = data.display_cmd || data.cmd || "";
     let arg = data.arg1 || "";
-    let line = `[${ts}] PID=${data.pid} UID=${data.uid} USER=${data.user || ""} COMM=${data.comm}`;
+
+    // Insert k8sPart right after COMM for easy scanning
+    let line = `[${ts}] PID=${data.pid} UID=${data.uid} USER=${data.user || ""} COMM=${data.comm}${k8sPart}`;
     if (cmd) line += ` CMD=${cmd}`;
     if (arg) line += ` ARG=${arg}`;
     line += ` IP=${data.ip || "localhost"} TYPE=${data.msg_type_str}${portPart}${tagsDisplay}`;
 
     if (data._ && data._ !== "ok") {
-        line += ` Reason: ${data._}`;   // show the real error reason
+      line += ` Reason: ${data._}`;   // show the real error reason
     }
 
     const div = document.createElement("div");
     div.textContent = line;
-    div.className = data.risk_level === 1 ? "risk-high" : (data.risk_level === 2 ? "risk-medium" : "risk-low");
+    div.className = data.risk_level === 1 ? "risk-high"
+                 : (data.risk_level === 2 ? "risk-medium" : "risk-low");
     log.appendChild(div);
 
-    if (data.risk_level === 1) red++; else if (data.risk_level === 2) orange++; else green++;
+    if (data.risk_level === 1) red++;
+    else if (data.risk_level === 2) orange++;
+    else green++;
   }
 
   document.getElementById("count-red").textContent = `High Risk: ${red}`;
