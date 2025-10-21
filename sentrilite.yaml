@@ -1,4 +1,22 @@
 apiVersion: v1
+kind: Secret
+metadata:
+  name: sentrilite-integrations
+  namespace: kube-system
+type: Opaque
+stringData:
+  PAGERDUTY_ROUTING_KEY: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentrilite-config
+  namespace: kube-system
+data:
+  PAGERDUTY_EVENTS_URL: ""
+  ALERTMANAGER_URL: ""
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: sentrilite
@@ -9,11 +27,9 @@ kind: ClusterRole
 metadata:
   name: sentrilite-read
 rules:
-# Core objects for OOMKilled/pod/node watching
 - apiGroups: [""]
   resources: ["pods", "nodes"]
   verbs: ["get", "list", "watch"]
-# Metrics API for high CPU polling
 - apiGroups: ["metrics.k8s.io"]
   resources: ["pods", "nodes"]
   verbs: ["get", "list"]
@@ -51,18 +67,15 @@ spec:
       hostPID: true
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
-
       tolerations:
       - operator: Exists
-
-      # Optional: keep if your image is amd64-only
       nodeSelector:
         kubernetes.io/arch: amd64
         kubernetes.io/os: linux
 
       containers:
       - name: sentrilite
-        image: docker.io/sentrilite/sentrilite:1.0.2
+        image: docker.io/sentrilite/sentrilite:1.0.5
         imagePullPolicy: Always
         securityContext:
           privileged: true
@@ -71,12 +84,38 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
+        - name: SENTRILITE_LICENSE_PATH
+          value: /opt/sentrilite/license.key
+        # from Secret (sensitive)
+        - name: PAGERDUTY_ROUTING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: sentrilite-integrations
+              key: PAGERDUTY_ROUTING_KEY
+        # from ConfigMap (non-sensitive)
+        - name: PAGERDUTY_EVENTS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: sentrilite-config
+              key: PAGERDUTY_EVENTS_URL
+              optional: true
+        - name: ALERTMANAGER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: sentrilite-config
+              key: ALERTMANAGER_URL
+              optional: true
         ports:
         - name: http
           containerPort: 80
         - name: ws
           containerPort: 8765
         volumeMounts:
+        # Overlay only the file; keeps the rest of /opt/sentrilite from the image
+        - name: sentrilite-license
+          mountPath: /opt/sentrilite/license.key
+          subPath: license.key
+          readOnly: true
         # eBPF + tracing mounts
         - name: bpf
           mountPath: /sys/fs/bpf
@@ -88,24 +127,22 @@ spec:
         - name: kernel-src
           mountPath: /usr/src
           readOnly: true
-
         lifecycle:
-        # Uninstall: Remove all tracepoints and bpfmaps
           preStop:
             exec:
               command: ["/bin/sh","-c","/opt/sentrilite/unload_bpf.sh || true"]
 
       volumes:
+      # Kustomize will inject the hash-suffixed Secret name here automatically
+      - name: sentrilite-license
+        secret:
+          secretName: sentrilite-license
+          defaultMode: 0400
       - name: bpf
-        hostPath:
-          path: /sys/fs/bpf
+        hostPath: { path: /sys/fs/bpf }
       - name: kdebug
-        hostPath:
-          path: /sys/kernel/debug
+        hostPath: { path: /sys/kernel/debug }
       - name: modules
-        hostPath:
-          path: /lib/modules
+        hostPath: { path: /lib/modules }
       - name: kernel-src
-        hostPath:
-          path: /usr/src
-
+        hostPath: { path: /usr/src }

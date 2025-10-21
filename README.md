@@ -1,6 +1,6 @@
-# Sentrilite — Cloud-Native, AI-Powered Lightweight, Real-Time System Observability & Security
+# Sentrilite — Cloud-Native, AI-Powered, eBPF based Lightweight, Real-Time System Observability & Security
 
-Sentrilite is a Cloud-Native Programmable Observability layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
+Sentrilite is a Hybrid-Cloud Programmable Observability layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
 Hybrid & multi-cloud ready: Works the same across public clouds and on-prem—EKS, GKE, AKS, vanilla Kubernetes, bare-metal, and edge—so you get a consistent, low-overhead security and observability layer for hybrid/multi-cloud environments all managed from a single dashboard.
 
 In Kubernetes, Sentrilite runs as a privileged DaemonSet on every node (no changes to your workloads). Each agent uses hostPID/hostNetwork to observe container processes, then enriches events with pod metadata (namespace, pod, container, UID) by correlating cgroups with the API server. This lets you see all the activity at the container/pod level:
@@ -13,14 +13,14 @@ In Kubernetes, Sentrilite runs as a privileged DaemonSet on every node (no chang
 - Custom rules & risk: Declarative JSON rules tag and score events; high-risk findings become alerts with clear, human-readable summaries that include k8s context.
 - Reporting: Generate rich summary reports (e.g., PDF/CSV) showing timelines, risky commands, and per-namespace insights for audits and incident reviews.
 - Real-time security posture: Optional controls (like iptables-backed allow/deny rules) help you respond quickly to suspicious network behavior.
+- Third-Party-Integrations: Seamlessly integrate with external alerting tools like: prometheus:alert-manager, pagerduty etc.
 - LLM-powered insights: automatically summarize trends, explain anomalies, and suggest remediation/rules from live telemetry and alerts.
 
 In summary, Sentrilite gives you container-aware process, file, and network visibility with minimal overhead, live dashboards for fast triage, and exportable reports for compliance and forensics—all from a single, node-level DaemonSet.
 
-Website: https://sentrilite.com
-Email: info@sentrilite.com
-GitHub: https://github.com/sentrilite/sentrilite
-Demo: https://youtu.be/rRexG-f6YFM
+- Website: https://sentrilite.com
+- Email: info@sentrilite.com
+- Demo: https://youtu.be/rRexG-f6YFM
 
 ---
 
@@ -32,32 +32,34 @@ Demo: https://youtu.be/rRexG-f6YFM
 - Custom rules with risk scoring and alerting
 - Kubernetes enrichment (namespace/pod/container/UID) when running as a DaemonSet
 - OOMKilled alerts and pod watchers (best effort if K8s APIs available)
+- Seamlessly integrate with prometheus alert-manager/pagerduty
 
 ---
 
 ## 📦 Contents of this Bundle
 
 | File              | Purpose
-|-------------------|------------------------------------------
-| `trace_syscall.o` | eBPF kernel object for syscall monitoring
-| `install.sh`      | Script to load the ebpf kernel module
-| `unload_bpf.sh`   | Script to unload the ebpf kernel module
-| `trace_events`    | Userspace program for network/socket activity
-| `sentrilite`      | Go websocket server that forwards live events to browser dashboard
-| `main.html`       | Main frontend UI for viewing node status
-| `dashboard.html`  | Local frontend UI for viewing live events
-| `net.conf`        | Configuration file
-| `sentrilite.yaml` | Sentrilite daemonset manifest to install on Kubernetes cluster
-| `bpftool`         | Tool to load and attach kernel tracepoints. Source: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-| `LICENSE.bpftool` | GPL-2.0 License for bpftool. Source: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
-| `license.key`     | Sentrilite License key file
-| `LICENSE.txt`     | Sentrilite License Agreement
-| `install.README`  | This installation guide
-| `dashboard.README`| Dashboard usage guide
+|-------------------   |------------------------------------------
+| `trace_syscall.o`    | eBPF kernel object for syscall monitoring
+| `install.sh`         | Script to load the ebpf kernel module
+| `unload_bpf.sh`      | Script to unload the ebpf kernel module
+| `trace_events`       | Userspace program for network/socket activity
+| `sentrilite`         | Go websocket server that forwards live events to browser dashboard
+| `main.html`          | Main frontend UI for viewing node status
+| `dashboard.html`     | Local frontend UI for viewing live events
+| `sys.conf`           | Configuration file
+| `sentrilite.yaml`    | Sentrilite daemonset manifest to install on Kubernetes cluster
+| `kustomization.yaml` | Kubernetes fest to update License.key
+| `bpftool`            | Tool to load and attach kernel tracepoints. Source: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+| `LICENSE.bpftool`    | GPL-2.0 License for bpftool. Source: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
+| `license.key`        | Sentrilite License key file
+| `LICENSE.txt`        | Sentrilite License Agreement
+| `install.README`     | This installation guide
+| `dashboard.README`   | Dashboard usage guide
 
 ---
 
-## ⚙️ System Requirements
+## ⚙️  System Requirements
 
 - Ubuntu 20.04+
 - Root privileges (for loading eBPF programs)
@@ -67,7 +69,7 @@ Demo: https://youtu.be/rRexG-f6YFM
 
 ---
 
-## ⚙️ General  Requirements
+## ⚙️  General  Requirements
 
 - bpftool:                Load eBPF programs and manage maps              sudo apt install bpftool (Ubuntu)
 - libbpf & headers        Required by the kernel loader (trace_events)    Pre-installed on most modern distros (use bundled binary)
@@ -78,6 +80,16 @@ Demo: https://youtu.be/rRexG-f6YFM
 ## 🔐 Licensing
 
 The project is currently using a trial license.key .
+
+---
+
+## 🛠️ Third-Party Integrations (PagerDuty & Alertmanager)
+
+- Kubernetes: add URLs in a ConfigMap (e.g., ALERTMANAGER_URL, optional PAGERDUTY_EVENTS_URL) and the PagerDuty routing key in a Secret (PAGERDUTY_ROUTING_KEY). 
+- Standalone Linux: set the same keys in sys.conf (e.g., ALERTMANAGER_URL=http://..., PAGERDUTY_ROUTING_KEY=...; PD URL defaults to US if omitted).
+
+Sentrilite prefers env vars (K8s) and falls back to sys.conf (bare metal).
+Note: Alertmanager must be reachable and supports v2 API (/api/v2/alerts). PagerDuty uses Events v2.
 
 ---
 
@@ -101,7 +113,7 @@ Example Alert Message:
     "type": "high_risk",
     "message": "root ran a high-risk command '/bin/sudo' from IP 10.0.0.1.",
     "pid": "1546794",
-    "cmd": "/bin/ls",
+    "cmd": "/bin/sudo",
     "args": "",
     "ip": "127.0.0.1",
     "risk_level": 1,
@@ -129,9 +141,13 @@ cd sentrilite
 2. Load the bpf program:
 sudo ./install.sh
 
-3. Open net.conf and configure:
-license_file=license.key    # Path to your license file
-iface=enX0 # your ethernet or your network interface
+3. Open sys.conf and configure:
+IFACE=
+LICENSE_KEY=./license.key
+SIEM=""
+PAGERDUTY_EVENTS_URL=""
+PAGERDUTY_ROUTING_KEY=""
+ALERTMANAGER_URL=""
 
 4. Launch the Server:
 sudo ./sentrilite
@@ -145,7 +161,7 @@ Log format in the Web UI:
 [2025-04-14T00:12:32.008Z] PID=1234 COMM=ssh CMD=/bin/bash ARG= IP=127.0.0.1 TYPE=EXECVE
 
 6. Open the Main Dashboard:
-Copy the main.html to /var/www/html on your main admin server.
+Copy the main.html & jspdf.umd.min.js to /var/www/html on your main admin server.
 Open the main.html in your browser: http://<YOUR-SERVER-IP>/main.html
 Click choose file and select a file containing your server lists.
 Example file format:
@@ -162,8 +178,8 @@ For more detail information, refer to dashboard.README
 
 # Configuration
 
-- license.key — place at /etc/sentrilite/license.key (baked in image or mounted as Secret).
-- net.conf — network config, placed at /etc/sentrilite/net.conf (baked in image or mounted as ConfigMap).
+- license.key — place in the current directory (baked in image or mounted as Secret).
+- sys.conf — network config, placed in the current directory (baked in image or mounted as ConfigMap).
 - Rule files (rules.json, sensitive_files.json, xdr_rules.json, alerts.json) reside in the working dir; rules can be managed via the dashboard.
 
 ---

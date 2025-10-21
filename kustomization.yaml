@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+resources:
+  - sentrilite.yaml   # the DaemonSet + RBAC below
+
+secretGenerator:
+  - name: sentrilite-license
+    files:
+      - license.key   # <-- local file in this folder
+    options:
+      # Keep the content hashed in the Secret name to force rollout on change
+      disableNameSuffixHash: false
