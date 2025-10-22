@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sentrilite-agent
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: sentrilite-agent
+  template:
+    metadata:
+      labels:
+        app: sentrilite-agent
+        {{- range $k, $v := .Values.pod.labels }}
+        {{ $k }}: {{ $v | quote }}
+        {{- end }}
+    spec:
+      serviceAccountName: sentrilite
+      automountServiceAccountToken: true
+      hostPID: {{ .Values.pod.hostPID }}
+      hostNetwork: {{ .Values.pod.hostNetwork }}
+      dnsPolicy: {{ .Values.pod.dnsPolicy }}
+      tolerations:
+        {{- toYaml .Values.pod.tolerations | nindent 8 }}
+      nodeSelector:
+        {{- toYaml .Values.pod.nodeSelector | nindent 8 }}
+
+      # --- overlay /opt/sentrilite and symlink the license to a Secret dir ---
+      initContainers:
+        - name: prime-opt
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh","-lc"]
+          args:
+            - |
+              set -e
+              cp -a /opt/sentrilite/. /work/
+              ln -sf /license-mount/{{ .Values.license.fileKey }} /work/license.key
+          volumeMounts:
+            - name: opt-overlay
+              mountPath: /work
+            - name: license-secret
+              mountPath: /license-mount
+              readOnly: true
+
+      containers:
+        - name: sentrilite
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            privileged: true
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: SENTRILITE_LICENSE_PATH
+              value: "/opt/sentrilite/license.key"
+            {{- if .Values.integrations.pagerdutyRoutingKey }}
+            - name: PAGERDUTY_ROUTING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sentrilite-integrations
+                  key: PAGERDUTY_ROUTING_KEY
+            {{- end }}
+            {{- if .Values.integrations.pagerdutyEventsURL }}
+            - name: PAGERDUTY_EVENTS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: sentrilite-config
+                  key: PAGERDUTY_EVENTS_URL
+                  optional: true
+            {{- end }}
+            {{- if .Values.integrations.alertmanagerURL }}
+            - name: ALERTMANAGER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: sentrilite-config
+                  key: ALERTMANAGER_URL
+                  optional: true
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+            - name: ws
+              containerPort: 8765
+          volumeMounts:
+            # Use the prepared overlay as /opt/sentrilite
+            - name: opt-overlay
+              mountPath: /opt/sentrilite
+            # Mount Secret as a directory (enables live updates)
+            - name: license-secret
+              mountPath: /license-mount
+              readOnly: true
+            - name: bpf
+              mountPath: /sys/fs/bpf
+            - name: kdebug
+              mountPath: /sys/kernel/debug
+            - name: modules
+              mountPath: /lib/modules
+              readOnly: true
+            - name: kernel-src
+              mountPath: /usr/src
+              readOnly: true
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","/opt/sentrilite/unload_bpf.sh || true"]
+
+      volumes:
+        - name: opt-overlay
+          emptyDir: {}
+        - name: license-secret
+          secret:
+            secretName: {{ .Values.license.existingSecretName }}
+            defaultMode: 0400
+        - name: bpf
+          hostPath: { path: /sys/fs/bpf }
+        - name: kdebug
+          hostPath: { path: /sys/kernel/debug }
+        - name: modules
+          hostPath: { path: /lib/modules }
+        - name: kernel-src
+          hostPath: { path: /usr/src }

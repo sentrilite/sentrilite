@@ -20,7 +20,8 @@ In summary, Sentrilite gives you container-aware process, file, and network visi
 
 - Website: https://sentrilite.com
 - Email: info@sentrilite.com
-- Demo: https://youtu.be/rRexG-f6YFM
+- Hybrid Cloud Demo: https://youtu.be/FmFUs0ZhdIY
+- Linux (bare-metal) Demo: https://youtu.be/rRexG-f6YFM
 
 ---
 
@@ -50,6 +51,7 @@ In summary, Sentrilite gives you container-aware process, file, and network visi
 | `sys.conf`           | Configuration file
 | `sentrilite.yaml`    | Sentrilite daemonset manifest to install on Kubernetes cluster
 | `kustomization.yaml` | Kubernetes fest to update License.key
+| `charts`             | Helm Charts for installation
 | `bpftool`            | Tool to load and attach kernel tracepoints. Source: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
 | `LICENSE.bpftool`    | GPL-2.0 License for bpftool. Source: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
 | `license.key`        | Sentrilite License key file

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sentrilite
+description: Sentrilite agent DaemonSet
+type: application
+version: "1.0.6"
+appVersion: "1.0.6"

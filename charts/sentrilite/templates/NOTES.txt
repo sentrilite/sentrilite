@@ -1,0 +1,12 @@
+Sentrilite installation..
+
+Ensure the license Secret exists:
+  kubectl -n {{ .Values.namespace }} get secret {{ .Values.license.existingSecretName }}
+
+If you set integrations:
+  - Alertmanager URL: {{ .Values.integrations.alertmanagerURL | default "not set" }}
+  - PagerDuty routing key present: {{ if .Values.integrations.pagerdutyRoutingKey }}yes{{ else }}no{{ end }}
+
+Check pods:
+  kubectl -n {{ .Values.namespace }} get pods -l app=sentrilite-agent
+
