@@ -1,8 +1,12 @@
 # Sentrilite — Hybrid-Cloud Observability, Security and Intelligence in One Platform
 
-![Sentrilite hybrid cloud diagram](./hybrid_cloud_workflow.jpg)
+#Sentrilite Workflow Diagram
+![Sentrilite hybrid cloud diagram](./Sentrilite_Architecture_Diagram.png)
+#Sentrilite Components
 ![Sentrilite components](./components.png)
+# Main Dashboard
 ![Sentrilite Main Dashboard](./main_dashboard.png)
+# Live Server Dashboard
 ![Sentrilite Server_Dashboard](./live_dashboard.png)
 
 Sentrilite is a Hybrid-Cloud Programmable Observability layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
