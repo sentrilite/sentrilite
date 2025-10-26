@@ -1,4 +1,6 @@
-# Sentrilite — Cloud-Native, AI-Powered, eBPF based Lightweight, Real-Time System Observability & Security
+# Sentrilite — Hybrid-Cloud Observability, Security and Intelligence in One Platform
+
+![Sentrilite hybrid cloud diagram](./hybrid_cloud_workflow.jpg)
 
 Sentrilite is a Hybrid-Cloud Programmable Observability layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
 Hybrid & multi-cloud ready: Works the same across public clouds and on-prem—EKS, GKE, AKS, vanilla Kubernetes, bare-metal, and edge—so you get a consistent, low-overhead security and observability layer for hybrid/multi-cloud environments all managed from a single dashboard.
@@ -100,6 +102,13 @@ Note: Alertmanager must be reachable and supports v2 API (/api/v2/alerts). Pager
 For Kubernetes Cluster: EKS/AKS/GKE or Private Kubernetes Cluster
 
 ```
+Helm Installation:
+
+In the charts directory:
+helm upgrade --install sentrilite charts/sentrilite -n kube-system --create-namespace
+
+OR plain kubectl installation:
+
 kubectl apply -f sentrilite.yaml
 kubectl -n kube-system get pods -l app=sentrilite-agent -o wide
 kubectl get nodes | awk '!/NAME/{print $1,",K8s"}' > nodes.txt
