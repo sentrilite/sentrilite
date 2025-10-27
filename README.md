@@ -1,4 +1,4 @@
-# Sentrilite — Hybrid-Cloud Observability, Security and Intelligence in One Platform
+# Sentrilite — Hybrid-Cloud Observability, Runtime-Security and Intelligence in One Platform
 
 #Sentrilite Workflow Diagram
 ![Sentrilite hybrid cloud diagram](./Sentrilite_Architecture_Diagram.png)
@@ -8,8 +8,10 @@
 ![Sentrilite Main Dashboard](./main_dashboard.png)
 # Live Server Dashboard
 ![Sentrilite Server_Dashboard](./live_dashboard.png)
+# PDF Report 
+![Sentrilite PDF_Report](./pdf_report.png)
 
-Sentrilite is a Hybrid-Cloud Programmable Observability layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
+Sentrilite is a Hybrid-Cloud Programmable Observability & Runtime-Security layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
 Hybrid & multi-cloud ready: Works the same across public clouds and on-prem—EKS, GKE, AKS, vanilla Kubernetes, bare-metal, and edge—so you get a consistent, low-overhead security and observability layer for hybrid/multi-cloud environments all managed from a single dashboard.
 
 In Kubernetes, Sentrilite runs as a privileged DaemonSet on every node (no changes to your workloads). Each agent uses hostPID/hostNetwork to observe container processes, then enriches events with pod metadata (namespace, pod, container, UID) by correlating cgroups with the API server. This lets you see all the activity at the container/pod level:
@@ -48,33 +50,35 @@ In summary, Sentrilite gives you container-aware process, file, and network visi
 
 ## 📦 Contents of this Bundle
 
-| File              | Purpose
-|-------------------   |------------------------------------------
-| `trace_syscall.o`    | eBPF kernel object for syscall monitoring
-| `install.sh`         | Script to load the ebpf kernel module
-| `unload_bpf.sh`      | Script to unload the ebpf kernel module
-| `trace_events`       | Userspace program for network/socket activity
-| `sentrilite`         | Go websocket server that forwards live events to browser dashboard
-| `main.html`          | Main frontend UI for viewing node status
-| `dashboard.html`     | Local frontend UI for viewing live events
-| `sys.conf`           | Configuration file
-| `sentrilite.yaml`    | Sentrilite daemonset manifest to install on Kubernetes cluster
-| `kustomization.yaml` | Kubernetes fest to update License.key
-| `charts`             | Helm Charts for installation
-| `bpftool`            | Tool to load and attach kernel tracepoints. Source: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-| `LICENSE.bpftool`    | GPL-2.0 License for bpftool. Source: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
-| `license.key`        | Sentrilite License key file
-| `LICENSE.txt`        | Sentrilite License Agreement
-| `install.README`     | This installation guide
-| `dashboard.README`   | Dashboard usage guide
+| File                      | Purpose
+|---------------------------|------------------------------------------
+| `trace_syscall.o`         | eBPF kernel object for syscall monitoring
+| `install.sh`              | Script to load the ebpf kernel module
+| `unload_bpf.sh`           | Script to unload the ebpf kernel module
+| `trace_events`            | Userspace program for network/socket activity
+| `sentrilite`              | Go websocket server that forwards live events to browser dashboard
+| `main.html`               | Main frontend UI for viewing node status
+| `dashboard.html`          | Local frontend UI for viewing live events
+| `sys.conf`                | Configuration file
+| `rules.json`              | Default rules. Refer the Product Guide for details.
+| `sensitive_files.json`    | Files to Monitor. Refer the Product Guide for details.
+| `sentrilite.yaml`         | Sentrilite daemonset manifest to install on Kubernetes cluster
+| `kustomization.yaml`      | Kubernetes fest to update License.key
+| `charts`                  | Helm Charts for installation
+| `bpftool`                 | Tool to load and attach kernel tracepoints. Source: https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+| `LICENSE.bpftool`         | GPL-2.0 License for bpftool. Source: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
+| `license.key`             | Sentrilite License key file
+| `LICENSE.txt`             | Sentrilite License Agreement
+| `install.README`          | This installation guide
+| `dashboard.README`        | Dashboard usage guide
+| `Product Guide v1.0.pdf`  | Sentrilite Product Guide
 
 ---
 
 ## ⚙️  System Requirements
 
-- Ubuntu 20.04+
+- Linux Kernel with eBPF support (Linux 5.8+ recommended)
 - Root privileges (for loading eBPF programs)
-- Kernel with eBPF support (Linux 5.8+ recommended)
 - Ports: 80 (dashboard), 8765 (WebSocket)
 - Kubernetes (optional): Cluster access with ability to run a privileged DaemonSet
 
@@ -231,5 +235,5 @@ sudo ./unload_bpf.sh
 ## Support
 
 For licensing, troubleshooting, or feature requests:
-📧 info@sentrilite.com
-🌐 https://sentrilite.com
+- 📧 info@sentrilite.com
+- 🌐 https://sentrilite.com

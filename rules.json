@@ -1,0 +1,24 @@
+[
+  { "match_key": "cmd", "match_values": ["sudo","su","pkexec"], "tags": ["privilege-escalation"], "risk_level": 1 },
+  { "match_key": "cmd", "match_values": ["nc","ncat","netcat","socat"], "tags": ["suspicious-network","lateral-movement"], "risk_level": 1 },
+  { "match_key": "cmd", "match_values": ["nmap","masscan"], "tags": ["recon","port-scan"], "risk_level": 1 },
+  { "match_key": "cmd", "match_values": ["iptables","ip6tables","nft"], "tags": ["network-policy-change"], "risk_level": 1 },
+  { "match_key": "cmd", "match_values": ["insmod","modprobe"], "tags": ["kernel-module-load"], "risk_level": 1 },
+  { "match_key": "arg", "match_values": ["169.254.169.254","http://169.254.169.254","https://169.254.169.254"], "tags": ["cloud-metadata-access"], "risk_level": 1 },
+  { "match_key": "arg", "match_values": ["metadata.google.internal"], "tags": ["cloud-metadata-access"], "risk_level": 1 },
+  { "match_key": "cmd", "match_values": ["xmrig","minerd","ethminer","lolMiner","teamredminer"], "tags": ["crypto-mining"], "risk_level": 1 },
+
+  { "match_key": "cmd", "match_values": ["ssh","scp","sftp"], "tags": ["lateral-movement"], "risk_level": 2 },
+  { "match_key": "cmd", "match_values": ["curl","wget"], "tags": ["ingress-egress","exfiltration"], "risk_level": 2 },
+  { "match_key": "cmd", "match_values": ["tcpdump","tshark"], "tags": ["packet-capture"], "risk_level": 2 },
+  { "match_key": "cmd", "match_values": ["mount","umount"], "tags": ["filesystem-change"], "risk_level": 2 },
+  { "match_key": "cmd", "match_values": ["kubectl","ctr","crictl","docker","runc"], "tags": ["container-runtime-admin"], "risk_level": 2 },
+  { "match_key": "cmd", "match_values": ["tc"], "tags": ["traffic-shaping"], "risk_level": 2 },
+  { "match_key": "cmd", "match_values": ["dd"], "tags": ["bulk-io","potential-exfil"], "risk_level": 2 },
+
+  { "match_key": "cmd", "match_values": ["python","perl","ruby","node"], "tags": ["scripting-runtime"], "risk_level": 3 },
+  { "match_key": "cmd", "match_values": ["base64","xxd","tar","zip"], "tags": ["encode-archive"], "risk_level": 3 },
+  { "match_key": "cmd", "match_values": ["apt","apt-get","yum","dnf","zypper","apk"], "tags": ["package-install"], "risk_level": 3 },
+  { "match_key": "user", "match_values": ["root"], "tags": ["privileged-user-activity"], "risk_level": 3 },
+  { "match_key": "iid",  "match_values": ["0"], "tags": ["privileged-user-activity"], "risk_level": 3 }
+]
