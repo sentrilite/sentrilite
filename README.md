@@ -8,7 +8,7 @@
 ![Sentrilite Main Dashboard](./main_dashboard.png)
 # Live Server Dashboard
 ![Sentrilite Server_Dashboard](./live_dashboard.png)
-# PDF Report 
+# PDF Report
 ![Sentrilite PDF_Report](./pdf_report.png)
 
 Sentrilite is a Hybrid-Cloud Programmable Observability & Runtime-Security layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
@@ -100,7 +100,7 @@ The project is currently using a trial license.key .
 
 ## 🛠️ Third-Party Integrations (PagerDuty & Alertmanager)
 
-- Kubernetes: add URLs in a ConfigMap (e.g., ALERTMANAGER_URL, optional PAGERDUTY_EVENTS_URL) and the PagerDuty routing key in a Secret (PAGERDUTY_ROUTING_KEY). 
+- Kubernetes: add URLs in a ConfigMap (e.g., ALERTMANAGER_URL, optional PAGERDUTY_EVENTS_URL) and the PagerDuty routing key in a Secret (PAGERDUTY_ROUTING_KEY).
 - Standalone Linux: set the same keys in sys.conf (e.g., ALERTMANAGER_URL=http://..., PAGERDUTY_ROUTING_KEY=...; PD URL defaults to US if omitted).
 
 Sentrilite prefers env vars (K8s) and falls back to sys.conf (bare metal).
