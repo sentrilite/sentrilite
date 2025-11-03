@@ -75,7 +75,7 @@ spec:
 
       containers:
       - name: sentrilite
-        image: docker.io/sentrilite/sentrilite:1.0.6
+        image: docker.io/sentrilite/sentrilite:1.0.8
         imagePullPolicy: Always
         securityContext:
           privileged: true
