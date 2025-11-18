@@ -1,4 +1,4 @@
-# Sentrilite — Hybrid-Cloud Observability, Runtime-Security and Intelligence in One Platform
+# Sentrilite — Hybrid-Cloud Observability, Runtime Security & Security Posture Management in One Platform
 
 #Sentrilite Workflow Diagram
 ![Sentrilite hybrid cloud diagram](./Sentrilite_Architecture_Diagram.png)
@@ -72,7 +72,7 @@ In summary, Sentrilite gives you container-aware process, file, and network visi
 | `LICENSE.txt`             | Sentrilite License Agreement
 | `install.README`          | This installation guide
 | `dashboard.README`        | Dashboard usage guide
-| `Product Guide v1.0.pdf`  | Sentrilite Product Guide
+| `Product Guide v1.1.pdf`  | Sentrilite Product Guide
 
 ---
 

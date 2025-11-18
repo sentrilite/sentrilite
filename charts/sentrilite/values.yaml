@@ -2,7 +2,7 @@ namespace: kube-system
 
 image:
   repository: docker.io/sentrilite/sentrilite
-  tag: "1.0.8"
+  tag: "1.0.9"
   pullPolicy: Always
 
 license:
