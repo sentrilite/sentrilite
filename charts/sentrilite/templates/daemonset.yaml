@@ -43,6 +43,26 @@ spec:
               mountPath: /license-mount
               readOnly: true
 
+        - name: link-rules
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh","-lc"]
+          args:
+            - |
+              set -e
+              # ensure target dir exists (overlay)
+              mkdir -p /opt/sentrilite
+              # create/refresh symlinks pointing to the live-updating CM mount
+              ln -sf /rules-mount/sensitive_files.json /opt/sentrilite/sensitive_files.json
+              ln -sf /rules-mount/custom_rules.json     /opt/sentrilite/custom_rules.json
+              ln -sf /rules-mount/security_rules.json   /opt/sentrilite/security_rules.json
+          volumeMounts:
+            - name: opt-overlay
+              mountPath: /opt/sentrilite
+            - name: sentrilite-rules
+              mountPath: /rules-mount
+              readOnly: true
+
       containers:
         - name: sentrilite
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -102,6 +122,9 @@ spec:
             - name: kernel-src
               mountPath: /usr/src
               readOnly: true
+            - name: sentrilite-rules
+              mountPath: /rules-mount
+              readOnly: true
           lifecycle:
             preStop:
               exec:
@@ -122,3 +145,6 @@ spec:
           hostPath: { path: /lib/modules }
         - name: kernel-src
           hostPath: { path: /usr/src }
+        - name: sentrilite-rules
+          configMap:
+            name: {{ .Release.Name }}-rules

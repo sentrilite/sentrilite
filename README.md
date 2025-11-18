@@ -60,7 +60,8 @@ In summary, Sentrilite gives you container-aware process, file, and network visi
 | `main.html`               | Main frontend UI for viewing node status
 | `dashboard.html`          | Local frontend UI for viewing live events
 | `sys.conf`                | Configuration file
-| `rules.json`              | Default rules. Refer the Product Guide for details.
+| `custom_rules.json`       | Custom Ruleset. Default 30+ rules. Can be extended at runtime. Refer the Product Guide for details.
+| `security_rules.json`     | Linux & Kubernetes Security Rules. Can be extended at runtime. Refer the Product Guide for details.
 | `sensitive_files.json`    | Files to Monitor. Refer the Product Guide for details.
 | `sentrilite.yaml`         | Sentrilite daemonset manifest to install on Kubernetes cluster
 | `kustomization.yaml`      | Kubernetes fest to update License.key
@@ -202,7 +203,7 @@ For more detail information, refer to dashboard.README
 
 - license.key — place in the current directory (baked in image or mounted as Secret).
 - sys.conf — network config, placed in the current directory (baked in image or mounted as ConfigMap).
-- Rule files (rules.json, sensitive_files.json, xdr_rules.json, alerts.json) reside in the working dir; rules can be managed via the dashboard.
+- Rule files (custom_rules.json, sensitive_files.json, security_rules.json, alerts.json) reside in the working dir; rules can be managed via the dashboard.
 
 ---
 

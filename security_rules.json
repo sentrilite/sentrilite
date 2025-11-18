@@ -1,0 +1,3374 @@
+{
+  "pod_rules": [
+    {
+      "id": "default_sa_used",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "sa"
+      ],
+      "type": "service_account",
+      "condition": "empty_or_default",
+      "description": "Detects pods using the default service account or no service account. Using default service accounts can lead to privilege escalation risks."
+    },
+    {
+      "id": "workload_in_default_namespace",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "namespace"
+      ],
+      "type": "namespace",
+      "condition": "is_default",
+      "description": "Identifies workloads running in the default namespace. The default namespace should be avoided for production workloads to improve isolation and security."
+    },
+    {
+      "id": "dns_policy_default",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "dns"
+      ],
+      "type": "dns_policy",
+      "condition": "is_default",
+      "description": "Checks for pods using the default DNS policy. Default DNS policy may not provide proper DNS resolution in all cluster configurations."
+    },
+    {
+      "id": "host_network_enabled",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "host_network",
+      "condition": "enabled",
+      "description": "Detects pods with hostNetwork enabled. This allows the pod to access the host's network stack, bypassing network isolation and increasing attack surface."
+    },
+    {
+      "id": "host_pid_enabled",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "host_pid",
+      "condition": "enabled",
+      "description": "Identifies pods with hostPID enabled. This allows the pod to see all processes on the host, potentially exposing sensitive information."
+    },
+    {
+      "id": "host_ipc_enabled",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "host_ipc",
+      "condition": "enabled",
+      "description": "Detects pods with hostIPC enabled. This allows the pod to access the host's IPC namespace, potentially enabling inter-process communication with host processes."
+    },
+    {
+      "id": "automount_service_account_token_true",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "sa"
+      ],
+      "type": "automount_sa_token",
+      "condition": "true",
+      "description": "Checks for pods that automatically mount service account tokens. This can expose service account credentials unnecessarily if not required."
+    },
+    {
+      "id": "share_process_namespace_enabled",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "share_process_namespace",
+      "condition": "enabled",
+      "description": "Identifies pods with shared process namespace enabled. This allows containers in the pod to see each other's processes, reducing isolation."
+    },
+    {
+      "id": "hostpath_root",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/",
+      "description": "Detects pods mounting the root filesystem via hostPath. This provides unrestricted access to the host filesystem and is a critical security risk."
+    },
+    {
+      "id": "hostpath_etc",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/etc",
+      "description": "Identifies pods mounting /etc directory via hostPath. This exposes host system configuration files and can lead to privilege escalation."
+    },
+    {
+      "id": "hostpath_root_dir",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/root",
+      "description": "Detects pods mounting /root directory via hostPath. This exposes the root user's home directory and sensitive files."
+    },
+    {
+      "id": "hostpath_var_lib",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/var/lib",
+      "description": "Checks for pods mounting /var/lib via hostPath. This directory contains application data and can expose sensitive information."
+    },
+    {
+      "id": "hostpath_var_run",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/var/run",
+      "description": "Identifies pods mounting /var/run via hostPath. This directory contains runtime data and socket files that should be isolated."
+    },
+    {
+      "id": "hostpath_var_lib_kubelet",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/var/lib/kubelet",
+      "description": "Detects pods mounting /var/lib/kubelet via hostPath. This exposes Kubernetes node configuration and can compromise cluster security."
+    },
+    {
+      "id": "hostpath_proc",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/proc",
+      "description": "Checks for pods mounting /proc via hostPath. This exposes host process information and kernel parameters, reducing isolation."
+    },
+    {
+      "id": "hostpath_sys",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/sys",
+      "description": "Identifies pods mounting /sys via hostPath. This exposes kernel and system information, potentially allowing host manipulation."
+    },
+    {
+      "id": "hostpath_dev",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/dev",
+      "description": "Detects pods mounting /dev via hostPath. This provides access to host device files and can enable device-level attacks."
+    },
+    {
+      "id": "hostpath_dev_shm",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/dev/shm",
+      "description": "Checks for pods mounting /dev/shm via hostPath. This shared memory filesystem can be used for inter-process communication with the host."
+    },
+    {
+      "id": "hostpath_var_run_docker_sock",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/var/run/docker.sock",
+      "description": "Identifies pods mounting Docker socket via hostPath. This provides full Docker daemon access and can lead to container escape."
+    },
+    {
+      "id": "hostpath_run_containerd_containerd_sock",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "hostpath",
+      "condition": "path_prefix",
+      "value": "/run/containerd/containerd.sock",
+      "description": "Detects pods mounting containerd socket via hostPath. This provides full containerd access and can enable container escape attacks."
+    },
+    {
+      "id": "container_privileged_true",
+      "severity": 1,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "container_privileged",
+      "condition": "true",
+      "description": "Detects containers running in privileged mode. Privileged containers have access to all host devices and capabilities, significantly increasing security risk."
+    },
+    {
+      "id": "run_as_non_root_false_or_missing",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "run_as_non_root",
+      "condition": "false_or_missing",
+      "description": "Checks if containers are configured to run as non-root user. Running as root increases the impact of container compromise."
+    },
+    {
+      "id": "allow_privilege_escalation_true",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "allow_privilege_escalation",
+      "condition": "true",
+      "description": "Identifies containers that allow privilege escalation. This enables processes to gain additional privileges beyond their initial set."
+    },
+    {
+      "id": "read_only_root_fs_disabled",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "read_only_root_fs",
+      "condition": "disabled",
+      "description": "Detects containers with writable root filesystem. Read-only root filesystems prevent malicious writes and improve security."
+    },
+    {
+      "id": "run_as_user_0",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "run_as_user",
+      "condition": "is_zero",
+      "description": "Checks for containers running as UID 0 (root). Running as root user increases security risk and should be avoided."
+    },
+    {
+      "id": "cap_drop_missing_all",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_drop",
+      "condition": "missing_all",
+      "description": "Identifies containers that don't drop ALL capabilities. Dropping all capabilities and adding only required ones follows least privilege principle."
+    },
+    {
+      "id": "seccomp_profile_missing_or_unset",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "seccomp"
+      ],
+      "type": "container_seccomp",
+      "condition": "missing_or_invalid",
+      "description": "Detects containers without proper seccomp profile. Seccomp profiles restrict available system calls, reducing attack surface."
+    },
+    {
+      "id": "pod_seccomp_missing_or_unset",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "seccomp"
+      ],
+      "type": "pod_seccomp",
+      "condition": "missing_or_invalid",
+      "description": "Checks for pods without proper seccomp profile at pod level. Pod-level seccomp provides additional security layer."
+    },
+    {
+      "id": "cap_add_sys_admin",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_ADMIN",
+      "description": "Detects containers with SYS_ADMIN capability added. This capability provides extensive system administration privileges."
+    },
+    {
+      "id": "cap_add_net_admin",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "NET_ADMIN",
+      "description": "Identifies containers with NET_ADMIN capability. This allows network configuration changes and can be misused."
+    },
+    {
+      "id": "cap_add_sys_ptrace",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_PTRACE",
+      "description": "Checks for containers with SYS_PTRACE capability. This allows debugging and tracing of other processes."
+    },
+    {
+      "id": "cap_add_sys_module",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_MODULE",
+      "description": "Detects containers with SYS_MODULE capability. This allows loading and unloading kernel modules, a high-risk capability."
+    },
+    {
+      "id": "cap_add_sys_time",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_TIME",
+      "description": "Identifies containers with SYS_TIME capability. This allows modification of system time."
+    },
+    {
+      "id": "cap_add_sys_rawio",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_RAWIO",
+      "description": "Checks for containers with SYS_RAWIO capability. This provides access to raw I/O ports and memory."
+    },
+    {
+      "id": "cap_add_mknod",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "MKNOD",
+      "description": "Detects containers with MKNOD capability. This allows creation of special device files."
+    },
+    {
+      "id": "cap_add_audit_control",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "AUDIT_CONTROL",
+      "description": "Identifies containers with AUDIT_CONTROL capability. This allows control of kernel auditing system."
+    },
+    {
+      "id": "cap_add_syslog",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYSLOG",
+      "description": "Checks for containers with SYSLOG capability. This allows configuration of kernel syslog."
+    },
+    {
+      "id": "cap_add_dac_read_search",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "DAC_READ_SEARCH",
+      "description": "Detects containers with DAC_READ_SEARCH capability. This bypasses file read and directory search permission checks."
+    },
+    {
+      "id": "cap_add_dac_override",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "DAC_OVERRIDE",
+      "description": "Identifies containers with DAC_OVERRIDE capability. This bypasses file read, write, and execute permission checks."
+    },
+    {
+      "id": "cap_add_linux_immutable",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "LINUX_IMMUTABLE",
+      "description": "Checks for containers with LINUX_IMMUTABLE capability. This allows modification of immutable files."
+    },
+    {
+      "id": "cap_add_net_raw",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "NET_RAW",
+      "description": "Detects containers with NET_RAW capability. This allows creation of raw sockets for network attacks."
+    },
+    {
+      "id": "cap_add_net_broadcast",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "NET_BROADCAST",
+      "description": "Identifies containers with NET_BROADCAST capability. This allows broadcasting network packets."
+    },
+    {
+      "id": "cap_add_fowner",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "FOWNER",
+      "description": "Checks for containers with FOWNER capability. This bypasses permission checks for file ownership."
+    },
+    {
+      "id": "cap_add_chown",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "CHOWN",
+      "description": "Detects containers with CHOWN capability. This allows changing file ownership."
+    },
+    {
+      "id": "cap_add_setgid",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SETGID",
+      "description": "Identifies containers with SETGID capability. This allows manipulation of process group IDs."
+    },
+    {
+      "id": "cap_add_setuid",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SETUID",
+      "description": "Checks for containers with SETUID capability. This allows manipulation of process user IDs."
+    },
+    {
+      "id": "cap_add_setfcap",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SETFCAP",
+      "description": "Detects containers with SETFCAP capability. This allows setting file capabilities."
+    },
+    {
+      "id": "cap_add_setpcap",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SETPCAP",
+      "description": "Identifies containers with SETPCAP capability. This allows manipulation of process capabilities."
+    },
+    {
+      "id": "cap_add_sys_boot",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_BOOT",
+      "description": "Checks for containers with SYS_BOOT capability. This allows rebooting the system."
+    },
+    {
+      "id": "cap_add_sys_nice",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_NICE",
+      "description": "Detects containers with SYS_NICE capability. This allows manipulation of process priorities."
+    },
+    {
+      "id": "cap_add_ipc_lock",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "IPC_LOCK",
+      "description": "Identifies containers with IPC_LOCK capability. This allows locking memory pages."
+    },
+    {
+      "id": "cap_add_ipc_owner",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "IPC_OWNER",
+      "description": "Checks for containers with IPC_OWNER capability. This bypasses permission checks for System V IPC objects."
+    },
+    {
+      "id": "cap_add_lease",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "LEASE",
+      "description": "Detects containers with LEASE capability. This allows taking leases on files."
+    },
+    {
+      "id": "cap_add_sys_resource",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_RESOURCE",
+      "description": "Identifies containers with SYS_RESOURCE capability. This allows overriding resource limits."
+    },
+    {
+      "id": "cap_add_sys_tty_config",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_TTY_CONFIG",
+      "description": "Checks for containers with SYS_TTY_CONFIG capability. This allows configuration of TTY devices."
+    },
+    {
+      "id": "cap_add_wake_alarm",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "WAKE_ALARM",
+      "description": "Detects containers with WAKE_ALARM capability. This allows setting wake-up alarms."
+    },
+    {
+      "id": "cap_add_sys_pacct",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "SYS_PACCT",
+      "description": "Identifies containers with SYS_PACCT capability. This allows configuration of process accounting."
+    },
+    {
+      "id": "cap_add_mac_admin",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "capabilities"
+      ],
+      "type": "cap_add",
+      "condition": "contains",
+      "value": "MAC_ADMIN",
+      "description": "Checks for containers with MAC_ADMIN capability. This allows configuration of Mandatory Access Control."
+    },
+    {
+      "id": "liveness_probe_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "probes"
+      ],
+      "type": "liveness_probe",
+      "condition": "missing",
+      "description": "Detects containers without liveness probes. Liveness probes help Kubernetes restart unhealthy containers."
+    },
+    {
+      "id": "readiness_probe_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "probes"
+      ],
+      "type": "readiness_probe",
+      "condition": "missing",
+      "description": "Identifies containers without readiness probes. Readiness probes prevent traffic to containers that aren't ready."
+    },
+    {
+      "id": "startup_probe_missing",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "probes"
+      ],
+      "type": "startup_probe",
+      "condition": "missing",
+      "description": "Checks for containers without startup probes. Startup probes handle slow-starting containers properly."
+    },
+    {
+      "id": "limits_cpu_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "resources"
+      ],
+      "type": "limits",
+      "condition": "missing",
+      "value": "cpu",
+      "description": "Detects containers without CPU limits. CPU limits prevent resource exhaustion and ensure fair scheduling."
+    },
+    {
+      "id": "limits_memory_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "resources"
+      ],
+      "type": "limits",
+      "condition": "missing",
+      "value": "memory",
+      "description": "Identifies containers without memory limits. Memory limits prevent OOM kills and resource contention."
+    },
+    {
+      "id": "limits_ephemeral_storage_missing",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "resources"
+      ],
+      "type": "limits",
+      "condition": "missing",
+      "value": "ephemeral-storage",
+      "description": "Checks for containers without ephemeral storage limits. Storage limits prevent disk space exhaustion."
+    },
+    {
+      "id": "requests_cpu_missing",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "resources"
+      ],
+      "type": "requests",
+      "condition": "missing",
+      "value": "cpu",
+      "description": "Detects containers without CPU requests. CPU requests ensure proper scheduling and resource allocation."
+    },
+    {
+      "id": "requests_memory_missing",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "resources"
+      ],
+      "type": "requests",
+      "condition": "missing",
+      "value": "memory",
+      "description": "Identifies containers without memory requests. Memory requests help with proper node selection and scheduling."
+    },
+    {
+      "id": "requests_ephemeral_storage_missing",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "resources"
+      ],
+      "type": "requests",
+      "condition": "missing",
+      "value": "ephemeral-storage",
+      "description": "Checks for containers without ephemeral storage requests. Storage requests ensure adequate disk space allocation."
+    },
+    {
+      "id": "image_without_digest",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "images"
+      ],
+      "type": "image",
+      "condition": "no_digest",
+      "description": "Detects container images specified without digest. Using digests ensures image immutability and prevents supply chain attacks."
+    },
+    {
+      "id": "image_tag_latest_or_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "images"
+      ],
+      "type": "image",
+      "condition": "latest_or_missing",
+      "description": "Identifies containers using 'latest' tag or no tag. This can lead to unexpected image updates and security issues."
+    },
+    {
+      "id": "host_port_used",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "network"
+      ],
+      "type": "host_port",
+      "condition": "used",
+      "description": "Checks for containers using host ports. Host ports bypass Kubernetes service networking and can cause port conflicts."
+    },
+    {
+      "id": "secrets_in_env_from_secretkeyref",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "secrets"
+      ],
+      "type": "secrets_env",
+      "condition": "from_secretkeyref",
+      "description": "Detects secrets exposed via environment variables from SecretKeyRef. Secrets in environment variables can be exposed in process lists and logs."
+    },
+    {
+      "id": "termination_grace_period_too_long",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "lifecycle"
+      ],
+      "type": "termination_grace_period",
+      "condition": "greater_than",
+      "value": "30",
+      "description": "Identifies pods with termination grace period exceeding 30 seconds. Long grace periods delay pod termination and can impact cluster operations."
+    },
+    {
+      "id": "pod_security_context_missing",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "pod_security_context",
+      "condition": "missing",
+      "description": "Detects pods without security context defined. Security contexts enforce security policies at the pod level."
+    },
+    {
+      "id": "run_as_group_0",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "run_as_group",
+      "condition": "is_zero",
+      "description": "Checks for containers running with GID 0 (root group). Running as root group can increase security risk."
+    },
+    {
+      "id": "fs_group_not_set",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "fs_group",
+      "condition": "missing",
+      "description": "Identifies pods without fsGroup set. fsGroup ensures proper file permissions for volumes."
+    },
+    {
+      "id": "supplemental_groups_present",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "supplemental_groups",
+      "condition": "present",
+      "description": "Detects pods with supplemental groups configured. Supplemental groups can provide additional access permissions."
+    },
+    {
+      "id": "proc_mount_default",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "proc_mount",
+      "condition": "is_default",
+      "description": "Checks for containers using default /proc mount. Custom proc mounts can hide sensitive process information."
+    },
+    {
+      "id": "sysctls_unsafe_present",
+      "severity": 1,
+      "tags": [
+        "k8s",
+        "posture",
+        "securitycontext"
+      ],
+      "type": "sysctls",
+      "condition": "unsafe_present",
+      "description": "Identifies pods with unsafe sysctls. Unsafe sysctls can affect node stability and security."
+    },
+    {
+      "id": "image_pull_policy_always_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "images"
+      ],
+      "type": "image_pull_policy",
+      "condition": "not_always",
+      "description": "Detects containers without Always image pull policy. Always pull policy ensures latest security patches are applied."
+    },
+    {
+      "id": "env_vars_from_configmap",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "config"
+      ],
+      "type": "env_from",
+      "condition": "from_configmap",
+      "description": "Checks for environment variables loaded from ConfigMaps. ConfigMap data in environment variables can expose configuration."
+    },
+    {
+      "id": "env_vars_plaintext",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "secrets"
+      ],
+      "type": "env_plaintext",
+      "condition": "present",
+      "description": "Detects plaintext environment variables. Sensitive data should not be stored in plaintext environment variables."
+    },
+    {
+      "id": "volume_mounts_writable",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "volume_mount",
+      "condition": "writable",
+      "description": "Identifies writable volume mounts. Writable mounts can allow unauthorized data modification."
+    },
+    {
+      "id": "empty_dir_volume_present",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "empty_dir",
+      "condition": "present",
+      "description": "Checks for emptyDir volumes. emptyDir volumes can be used for temporary storage but may persist sensitive data."
+    },
+    {
+      "id": "configmap_mounted",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "config"
+      ],
+      "type": "configmap_volume",
+      "condition": "mounted",
+      "description": "Detects ConfigMaps mounted as volumes. Mounted ConfigMaps can expose configuration data to containers."
+    },
+    {
+      "id": "secret_mounted",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "secrets"
+      ],
+      "type": "secret_volume",
+      "condition": "mounted",
+      "description": "Identifies Secrets mounted as volumes. While necessary, mounted secrets should be properly secured."
+    },
+    {
+      "id": "downward_api_volume_present",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "volume"
+      ],
+      "type": "downward_api",
+      "condition": "present",
+      "description": "Checks for Downward API volumes. Downward API can expose pod metadata to containers."
+    },
+    {
+      "id": "lifecycle_hooks_missing",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "lifecycle"
+      ],
+      "type": "lifecycle_hooks",
+      "condition": "missing",
+      "description": "Detects containers without lifecycle hooks. Lifecycle hooks help with graceful startup and shutdown."
+    },
+    {
+      "id": "restart_policy_always",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "lifecycle"
+      ],
+      "type": "restart_policy",
+      "condition": "is_always",
+      "description": "Identifies pods with Always restart policy. Always restart can mask underlying issues and consume resources."
+    },
+    {
+      "id": "priority_class_missing",
+      "severity": 4,
+      "tags": [
+        "k8s",
+        "posture",
+        "scheduling"
+      ],
+      "type": "priority_class",
+      "condition": "missing",
+      "description": "Checks for pods without priority class. Priority classes help with proper pod scheduling and eviction."
+    },
+    {
+      "id": "node_selector_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "scheduling"
+      ],
+      "type": "node_selector",
+      "condition": "missing",
+      "description": "Detects pods without node selectors. Node selectors help ensure pods run on appropriate nodes."
+    },
+    {
+      "id": "tolerations_present",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "scheduling"
+      ],
+      "type": "tolerations",
+      "condition": "present",
+      "description": "Identifies pods with tolerations. Tolerations allow pods to run on tainted nodes, which may be undesirable."
+    },
+    {
+      "id": "affinity_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "scheduling"
+      ],
+      "type": "affinity",
+      "condition": "missing",
+      "description": "Checks for pods without affinity rules. Affinity rules help with proper pod placement and distribution."
+    },
+    {
+      "id": "dns_config_custom",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "dns"
+      ],
+      "type": "dns_config",
+      "condition": "custom",
+      "description": "Detects pods with custom DNS configuration. Custom DNS configs can bypass cluster DNS policies."
+    },
+    {
+      "id": "host_aliases_present",
+      "severity": 2,
+      "tags": [
+        "k8s",
+        "posture",
+        "dns"
+      ],
+      "type": "host_aliases",
+      "condition": "present",
+      "description": "Identifies pods with host aliases. Host aliases can override DNS resolution and bypass network policies."
+    },
+    {
+      "id": "service_account_automount_token_true",
+      "severity": 1,
+      "tags": [
+        "k8s",
+        "posture",
+        "sa"
+      ],
+      "type": "sa_automount_token",
+      "condition": "true",
+      "description": "Checks for service accounts with automount token enabled. Automounting tokens can expose credentials unnecessarily."
+    },
+    {
+      "id": "runtime_class_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "runtime"
+      ],
+      "type": "runtime_class",
+      "condition": "missing",
+      "description": "Detects pods without runtime class specified. Runtime classes help enforce runtime security policies."
+    },
+    {
+      "id": "overhead_resources_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "resources"
+      ],
+      "type": "overhead",
+      "condition": "missing",
+      "description": "Identifies pods without overhead resources defined. Overhead resources ensure proper resource accounting."
+    },
+    {
+      "id": "topology_spread_constraints_missing",
+      "severity": 3,
+      "tags": [
+        "k8s",
+        "posture",
+        "scheduling"
+      ],
+      "type": "topology_spread",
+      "condition": "missing",
+      "description": "Checks for pods without topology spread constraints. Topology spread helps distribute pods across failure domains."
+    }
+  ],
+  "host_rules": [
+    {
+      "id": "ww_files_etc",
+      "severity": 2,
+      "tags": [
+        "file",
+        "permissions"
+      ],
+      "cmd": "find /etc -xdev -type f -perm -0002 -print 2>/dev/null | head -n 200",
+      "sample_limit": 8,
+      "description": "Detects world-writable files in /etc directory. World-writable files can be modified by any user, creating security risks."
+    },
+    {
+      "id": "ww_files_home",
+      "severity": 2,
+      "tags": [
+        "file",
+        "permissions"
+      ],
+      "cmd": "find /home -xdev -type f -perm -0002 -print 2>/dev/null | head -n 200",
+      "sample_limit": 8,
+      "description": "Identifies world-writable files in /home directory. These files can be modified by unauthorized users."
+    },
+    {
+      "id": "ww_files_var",
+      "severity": 2,
+      "tags": [
+        "file",
+        "permissions"
+      ],
+      "cmd": "find /var -xdev -type f -perm -0002 -print 2>/dev/null | head -n 200",
+      "sample_limit": 8,
+      "description": "Checks for world-writable files in /var directory. World-writable files in system directories are security concerns."
+    },
+    {
+      "id": "public_tcp_listeners",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "ss -ltnp 2>/dev/null | grep -E '0.0.0.0:|:::'",
+      "sample_limit": 8,
+      "description": "Detects TCP services listening on all interfaces (0.0.0.0 or :::). This exposes services to the network unnecessarily."
+    },
+    {
+      "id": "public_udp_listeners",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "ss -lunp 2>/dev/null | grep -E '0.0.0.0:|:::'",
+      "sample_limit": 8,
+      "description": "Identifies UDP services listening on all interfaces. Public UDP listeners can be exploited for amplification attacks."
+    },
+    {
+      "id": "ufw_inactive",
+      "severity": 3,
+      "tags": [
+        "firewall"
+      ],
+      "cmd": "ufw status 2>/dev/null | head -n1 | grep -i inactive",
+      "sample_limit": 8,
+      "description": "Checks if UFW (Uncomplicated Firewall) is inactive. Firewalls are essential for network security."
+    },
+    {
+      "id": "firewalld_inactive",
+      "severity": 3,
+      "tags": [
+        "firewall"
+      ],
+      "cmd": "systemctl is-active firewalld 2>/dev/null | grep -v active",
+      "sample_limit": 8,
+      "description": "Detects if firewalld is inactive. Firewalld provides dynamic firewall management and should be active."
+    },
+    {
+      "id": "selinux_not_enforcing",
+      "severity": 3,
+      "tags": [
+        "selinux"
+      ],
+      "cmd": "getenforce 2>/dev/null | egrep -qi 'permissive|disabled'",
+      "sample_limit": 8,
+      "description": "Identifies systems where SELinux is not in enforcing mode. SELinux provides mandatory access control security."
+    },
+    {
+      "id": "iptables_permissive",
+      "severity": 3,
+      "tags": [
+        "firewall"
+      ],
+      "cmd": "iptables -S 2>/dev/null | grep '-P INPUT ACCEPT' | grep -v -q '\\-A INPUT' && echo default_accept",
+      "sample_limit": 8,
+      "description": "Checks for permissive iptables rules. Default ACCEPT policies allow all traffic, reducing security."
+    },
+    {
+      "id": "auditd_inactive",
+      "severity": 3,
+      "tags": [
+        "audit"
+      ],
+      "cmd": "systemctl is-active auditd 2>/dev/null | grep -v active",
+      "sample_limit": 8,
+      "description": "Detects if auditd is inactive. Audit daemon is essential for security auditing and compliance."
+    },
+    {
+      "id": "apparmor_disabled",
+      "severity": 3,
+      "tags": [
+        "apparmor"
+      ],
+      "cmd": "aa-status 2>/dev/null | head -n1 | egrep -qi 'disabled|not found|command not found'",
+      "sample_limit": 8,
+      "description": "Identifies systems where AppArmor is disabled. AppArmor provides application-level security policies."
+    },
+    {
+      "id": "kernel_modules_autoload_enabled",
+      "severity": 2,
+      "tags": [
+        "kernel"
+      ],
+      "cmd": "sysctl -n kernel.modules_disabled 2>/dev/null | grep -q '^0$' && echo autoload_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if kernel module autoloading is enabled. Disabling autoload prevents loading of malicious modules."
+    },
+    {
+      "id": "core_dumps_enabled",
+      "severity": 2,
+      "tags": [
+        "kernel"
+      ],
+      "cmd": "sysctl -n fs.suid_dumpable 2>/dev/null | grep -q '^[^0]' && echo core_dumps_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects if core dumps are enabled. Core dumps can expose sensitive information from memory."
+    },
+    {
+      "id": "ipv6_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "test -f /proc/sys/net/ipv6/conf/all/disable_ipv6 && cat /proc/sys/net/ipv6/conf/all/disable_ipv6 2>/dev/null | grep -q '^0$' && echo ipv6_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies systems with IPv6 enabled. IPv6 should be disabled if not in use to reduce attack surface."
+    },
+    {
+      "id": "icmp_redirects_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_redirects 2>/dev/null | grep -q '^1$' && echo redirects_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if ICMP redirects are accepted. ICMP redirects can be used for man-in-the-middle attacks."
+    },
+    {
+      "id": "source_routing_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_source_route 2>/dev/null | grep -q '^1$' && echo source_routing_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects if source routing is enabled. Source routing can be exploited for network attacks."
+    },
+    {
+      "id": "syn_cookies_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_syncookies 2>/dev/null | grep -q '^0$' && echo syn_cookies_disabled || true",
+      "sample_limit": 8,
+      "description": "Identifies systems with SYN cookies disabled. SYN cookies protect against SYN flood attacks."
+    },
+    {
+      "id": "rp_filter_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.rp_filter 2>/dev/null | grep -q '^0$' && echo rp_filter_disabled || true",
+      "sample_limit": 8,
+      "description": "Checks if reverse path filtering is disabled. Reverse path filtering prevents IP spoofing attacks."
+    },
+    {
+      "id": "log_martians_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.log_martians 2>/dev/null | grep -q '^0$' && echo log_martians_disabled || true",
+      "sample_limit": 8,
+      "description": "Detects if logging of martian packets is disabled. Logging helps identify network anomalies."
+    },
+    {
+      "id": "icmp_echo_ignore_broadcasts_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_echo_ignore_broadcasts 2>/dev/null | grep -q '^0$' && echo ignore_broadcasts_disabled || true",
+      "sample_limit": 8,
+      "description": "Checks if ICMP echo broadcasts are not ignored. Ignoring broadcasts prevents ping floods."
+    },
+    {
+      "id": "icmp_ignore_bogus_error_responses_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_ignore_bogus_error_responses 2>/dev/null | grep -q '^0$' && echo ignore_bogus_disabled || true",
+      "sample_limit": 8,
+      "description": "Identifies systems not ignoring bogus ICMP error responses. This helps prevent ICMP-based attacks."
+    },
+    {
+      "id": "tcp_timestamps_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_timestamps 2>/dev/null | grep -q '^1$' && echo tcp_timestamps_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP timestamps enabled. TCP timestamps can be used for host fingerprinting and clock skew attacks."
+    },
+    {
+      "id": "tcp_sack_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack 2>/dev/null | grep -q '^1$' && echo tcp_sack_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP SACK is enabled. SACK can be exploited in certain attack scenarios."
+    },
+    {
+      "id": "tcp_window_scaling_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_window_scaling 2>/dev/null | grep -q '^1$' && echo window_scaling_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP window scaling enabled. Window scaling can be used for performance optimization but may have security implications."
+    },
+    {
+      "id": "tcp_syn_retries_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_syn_retries 2>/dev/null | awk '$1>5{print \"syn_retries=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP SYN retry count. High retry counts can be exploited for resource exhaustion."
+    },
+    {
+      "id": "tcp_fin_timeout_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fin_timeout 2>/dev/null | awk '$1>60{print \"fin_timeout=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP FIN timeout. High timeouts can lead to connection state exhaustion."
+    },
+    {
+      "id": "tcp_keepalive_time_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_keepalive_time 2>/dev/null | awk '$1<7200{print \"keepalive_time=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low TCP keepalive time. Low keepalive times can cause unnecessary connection overhead."
+    },
+    {
+      "id": "tcp_max_syn_backlog_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_max_syn_backlog 2>/dev/null | awk '$1<2048{print \"max_syn_backlog=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP SYN backlog. Low backlogs can make systems vulnerable to SYN flood attacks."
+    },
+    {
+      "id": "somaxconn_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.somaxconn 2>/dev/null | awk '$1<1024{print \"somaxconn=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for low socket maximum connections. Low limits can cause connection rejections under load."
+    },
+    {
+      "id": "netdev_max_backlog_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.netdev_max_backlog 2>/dev/null | awk '$1<5000{print \"netdev_max_backlog=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low network device backlog. Low backlogs can cause packet drops under high load."
+    },
+    {
+      "id": "tcp_slow_start_after_idle_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_slow_start_after_idle 2>/dev/null | grep -q '^1$' && echo slow_start_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP slow start after idle enabled. This can impact performance but may be necessary for some scenarios."
+    },
+    {
+      "id": "tcp_retries2_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_retries2 2>/dev/null | awk '$1>8{print \"retries2=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP retries. High retry counts can cause resource exhaustion."
+    },
+    {
+      "id": "ip_forward_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.ip_forward 2>/dev/null | grep -q '^1$' && echo ip_forward_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies IP forwarding enabled. IP forwarding should be disabled on non-router systems."
+    },
+    {
+      "id": "send_redirects_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.send_redirects 2>/dev/null | grep -q '^1$' && echo send_redirects_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects ICMP redirect sending enabled. Redirects can be used for network attacks."
+    },
+    {
+      "id": "accept_redirects_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_redirects 2>/dev/null | grep -q '^1$' && echo accept_redirects_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if ICMP redirects are accepted. Accepting redirects can enable man-in-the-middle attacks."
+    },
+    {
+      "id": "secure_redirects_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.secure_redirects 2>/dev/null | grep -q '^0$' && echo secure_redirects_disabled || true",
+      "sample_limit": 8,
+      "description": "Identifies secure redirects disabled. Secure redirects provide safer network routing."
+    },
+    {
+      "id": "shared_media_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.shared_media 2>/dev/null | grep -q '^0$' && echo shared_media_disabled || true",
+      "sample_limit": 8,
+      "description": "Checks if shared media is disabled. Shared media can expose network configuration."
+    },
+    {
+      "id": "bootp_relay_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.bootp_relay 2>/dev/null | grep -q '^0$' && echo bootp_relay_disabled || true",
+      "sample_limit": 8,
+      "description": "Detects BOOTP relay disabled. BOOTP relay should be disabled if not needed."
+    },
+    {
+      "id": "accept_source_route_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_source_route 2>/dev/null | grep -q '^1$' && echo accept_source_route_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies source routing acceptance enabled. Source routing can be exploited for attacks."
+    },
+    {
+      "id": "rp_filter_disabled_all",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.rp_filter 2>/dev/null | grep -q '^0$' && echo rp_filter_disabled || true",
+      "sample_limit": 8,
+      "description": "Checks if reverse path filtering is disabled globally. This prevents IP spoofing protection."
+    },
+    {
+      "id": "log_martians_disabled_all",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.log_martians 2>/dev/null | grep -q '^0$' && echo log_martians_disabled || true",
+      "sample_limit": 8,
+      "description": "Detects martian packet logging disabled globally. Logging helps identify network attacks."
+    },
+    {
+      "id": "icmp_ratelimit_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_ratelimit 2>/dev/null | awk '$1>1000{print \"icmp_ratelimit=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high ICMP rate limit. High limits can allow ICMP-based attacks."
+    },
+    {
+      "id": "icmp_ratemask_wrong",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_ratemask 2>/dev/null | awk '$1!=6168{print \"icmp_ratemask=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for incorrect ICMP rate mask. Proper rate masking prevents ICMP floods."
+    },
+    {
+      "id": "tcp_ecn_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_ecn 2>/dev/null | grep -q '^1$' && echo tcp_ecn_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP ECN (Explicit Congestion Notification) enabled. ECN can be used for network optimization."
+    },
+    {
+      "id": "tcp_recovery_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_recovery 2>/dev/null | grep -q '^1$' && echo tcp_recovery_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP recovery mechanisms enabled. Recovery helps with network resilience."
+    },
+    {
+      "id": "tcp_sack_enabled_all",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack 2>/dev/null | grep -q '^1$' && echo tcp_sack_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP SACK is enabled globally. SACK can have security implications."
+    },
+    {
+      "id": "tcp_fack_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fack 2>/dev/null | grep -q '^1$' && echo tcp_fack_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP FACK (Forward Acknowledgment) enabled. FACK can impact network performance."
+    },
+    {
+      "id": "tcp_dsack_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_dsack 2>/dev/null | grep -q '^1$' && echo tcp_dsack_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP DSACK (Duplicate SACK) enabled. DSACK helps with duplicate packet detection."
+    },
+    {
+      "id": "tcp_frto_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_frto 2>/dev/null | grep -q '^1$' && echo tcp_frto_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP F-RTO (Forward RTO-Recovery) is enabled. F-RTO improves retransmission handling."
+    },
+    {
+      "id": "tcp_low_latency_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_low_latency 2>/dev/null | grep -q '^1$' && echo tcp_low_latency_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP low latency mode enabled. Low latency can impact throughput."
+    },
+    {
+      "id": "tcp_adv_win_scale_wrong",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_adv_win_scale 2>/dev/null | awk '$1!=1 && $1!=2{print \"adv_win_scale=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies incorrect TCP advanced window scaling. Proper scaling is important for performance."
+    },
+    {
+      "id": "tcp_app_win_wrong",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_app_win 2>/dev/null | awk '$1!=31{print \"app_win=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for incorrect TCP application window. Proper window sizing affects performance."
+    },
+    {
+      "id": "tcp_rmem_max_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.rmem_max 2>/dev/null | awk '$1<262144{print \"rmem_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP receive memory maximum. Low limits can cause performance issues."
+    },
+    {
+      "id": "tcp_wmem_max_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.wmem_max 2>/dev/null | awk '$1<262144{print \"wmem_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low TCP send memory maximum. Low limits can impact network throughput."
+    },
+    {
+      "id": "tcp_mem_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mem 2>/dev/null | awk '{split($0,a,\" \"); if(a[1]<196608 || a[2]<262144 || a[3]<393216) print \"tcp_mem=\"$0}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP memory limits. Low limits can cause connection failures."
+    },
+    {
+      "id": "tcp_tw_reuse_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_tw_reuse 2>/dev/null | grep -q '^1$' && echo tcp_tw_reuse_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP time-wait socket reuse enabled. Reuse can help with connection handling."
+    },
+    {
+      "id": "tcp_fin_timeout_high_all",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fin_timeout 2>/dev/null | awk '$1>60{print \"fin_timeout=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP FIN timeout globally. High timeouts can exhaust connection states."
+    },
+    {
+      "id": "tcp_keepalive_probes_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_keepalive_probes 2>/dev/null | awk '$1<9{print \"keepalive_probes=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP keepalive probes. Low probe counts may not detect dead connections."
+    },
+    {
+      "id": "tcp_keepalive_intvl_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_keepalive_intvl 2>/dev/null | awk '$1<75{print \"keepalive_intvl=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP keepalive interval. Low intervals can cause excessive network traffic."
+    },
+    {
+      "id": "tcp_max_tw_buckets_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_max_tw_buckets 2>/dev/null | awk '$1>262144{print \"max_tw_buckets=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP time-wait buckets. High values can consume memory."
+    },
+    {
+      "id": "tcp_max_orphans_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_max_orphans 2>/dev/null | awk '$1>262144{print \"max_orphans=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP orphan connections. High values can indicate connection issues."
+    },
+    {
+      "id": "tcp_orphan_retries_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_orphan_retries 2>/dev/null | awk '$1>7{print \"orphan_retries=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP orphan retries. High retries can cause resource exhaustion."
+    },
+    {
+      "id": "tcp_abort_on_overflow_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_abort_on_overflow 2>/dev/null | grep -q '^1$' && echo abort_on_overflow_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP abort on overflow enabled. This can help prevent connection state exhaustion."
+    },
+    {
+      "id": "tcp_syncookies_disabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_syncookies 2>/dev/null | grep -q '^0$' && echo syncookies_disabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP SYN cookies are disabled. SYN cookies protect against SYN flood attacks."
+    },
+    {
+      "id": "tcp_synack_retries_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_synack_retries 2>/dev/null | awk '$1>5{print \"synack_retries=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP SYN-ACK retries. High retries can be exploited for resource exhaustion."
+    },
+    {
+      "id": "tcp_max_syn_backlog_low_all",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_max_syn_backlog 2>/dev/null | awk '$1<2048{print \"max_syn_backlog=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low TCP SYN backlog globally. Low backlogs are vulnerable to SYN floods."
+    },
+    {
+      "id": "tcp_congestion_control_wrong",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null | grep -vE '^(bbr|cubic|reno)$' && echo wrong_congestion_control || true",
+      "sample_limit": 8,
+      "description": "Checks for non-standard TCP congestion control. Standard algorithms are more secure."
+    },
+    {
+      "id": "tcp_slow_start_after_idle_enabled_all",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_slow_start_after_idle 2>/dev/null | grep -q '^1$' && echo slow_start_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp slow start after idle enabled all. This rule validates all settings for security compliance."
+    },
+    {
+      "id": "tcp_no_metrics_save_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_no_metrics_save 2>/dev/null | grep -q '^1$' && echo no_metrics_save_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP metrics saving disabled. Saving metrics can help with connection optimization."
+    },
+    {
+      "id": "tcp_moderate_rcvbuf_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_moderate_rcvbuf 2>/dev/null | grep -q '^1$' && echo moderate_rcvbuf_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP receive buffer moderation enabled. Moderation can help with memory usage."
+    },
+    {
+      "id": "tcp_tso_win_divisor_wrong",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_tso_win_divisor 2>/dev/null | awk '$1!=3{print \"tso_win_divisor=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for incorrect TCP TSO window divisor. Proper divisors are important for TSO efficiency."
+    },
+    {
+      "id": "tcp_congestion_control_bbr_missing",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null | grep -v bbr && echo bbr_missing || true",
+      "sample_limit": 8,
+      "description": "Detects missing BBR congestion control. BBR can improve network performance."
+    },
+    {
+      "id": "tcp_autocorking_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_autocorking 2>/dev/null | grep -q '^1$' && echo autocorking_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP autocorking enabled. Autocorking can improve performance but may have side effects."
+    },
+    {
+      "id": "tcp_min_tso_segs_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_min_tso_segs 2>/dev/null | awk '$1>2{print \"min_tso_segs=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP minimum TSO segments. High values can impact performance."
+    },
+    {
+      "id": "tcp_pacing_ss_ratio_wrong",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pacing_ss_ratio 2>/dev/null | awk '$1!=200{print \"pacing_ss_ratio=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects incorrect TCP pacing slow start ratio. Proper ratios optimize performance."
+    },
+    {
+      "id": "tcp_pacing_ca_ratio_wrong",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pacing_ca_ratio 2>/dev/null | awk '$1!=120{print \"pacing_ca_ratio=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies incorrect TCP pacing congestion avoidance ratio. Proper ratios are important for performance."
+    },
+    {
+      "id": "tcp_default_init_rwnd_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_default_init_rwnd 2>/dev/null | awk '$1<10{print \"default_init_rwnd=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP default initial receive window. Low windows can impact performance."
+    },
+    {
+      "id": "tcp_thin_linear_timeouts_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_thin_linear_timeouts 2>/dev/null | awk '$1>6{print \"thin_linear_timeouts=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP thin linear timeouts. High values can cause connection issues."
+    },
+    {
+      "id": "tcp_thin_dupack_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_thin_dupack 2>/dev/null | awk '$1>1000{print \"thin_dupack=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP thin duplicate ACK threshold. High values can delay retransmission."
+    },
+    {
+      "id": "tcp_early_retrans_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_early_retrans 2>/dev/null | grep -q '^1$' && echo early_retrans_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP early retransmission is enabled. Early retrans can improve performance."
+    },
+    {
+      "id": "tcp_recovery_enabled_all",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_recovery 2>/dev/null | grep -q '^1$' && echo recovery_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP recovery enabled globally. Recovery mechanisms help with network resilience."
+    },
+    {
+      "id": "tcp_early_demux_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP early demultiplexing enabled. Early demux can improve performance."
+    },
+    {
+      "id": "tcp_early_demux_enabled_ipv6",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv6.tcp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP early demux is enabled for IPv6. This can improve IPv6 performance."
+    },
+    {
+      "id": "udp_early_demux_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.udp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects UDP early demultiplexing enabled. Early demux can improve UDP performance."
+    },
+    {
+      "id": "udp_early_demux_enabled_ipv6",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv6.udp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies UDP early demux enabled for IPv6. This optimizes IPv6 UDP handling."
+    },
+    {
+      "id": "tcp_limit_output_bytes_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_limit_output_bytes 2>/dev/null | awk '$1>262144{print \"limit_output_bytes=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP limit output bytes. High limits can impact memory usage."
+    },
+    {
+      "id": "tcp_challenge_ack_limit_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_challenge_ack_limit 2>/dev/null | awk '$1>1000{print \"challenge_ack_limit=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP challenge ACK limit. High limits can be exploited for attacks."
+    },
+    {
+      "id": "tcp_min_rtt_wlen_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_min_rtt_wlen 2>/dev/null | awk '$1>300{print \"min_rtt_wlen=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP minimum RTT window length. High values can impact performance."
+    },
+    {
+      "id": "tcp_probe_interval_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_probe_interval 2>/dev/null | awk '$1>60000{print \"probe_interval=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP probe interval. High intervals can delay connection recovery."
+    },
+    {
+      "id": "tcp_probe_threshold_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_probe_threshold 2>/dev/null | awk '$1>8{print \"probe_threshold=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP probe threshold. High thresholds can delay retransmission."
+    },
+    {
+      "id": "tcp_mtu_probe_floor_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mtu_probe_floor 2>/dev/null | awk '$1<48{print \"mtu_probe_floor=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low TCP MTU probe floor. Low floors can cause fragmentation issues."
+    },
+    {
+      "id": "tcp_base_mss_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_base_mss 2>/dev/null | awk '$1<512{print \"base_mss=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP base MSS. Low MSS can impact performance."
+    },
+    {
+      "id": "tcp_mtu_probing_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mtu_probing 2>/dev/null | grep -q '^1$' && echo mtu_probing_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP MTU probing enabled. MTU probing can optimize path MTU discovery."
+    },
+    {
+      "id": "tcp_mtu_probe_interval_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mtu_probe_interval 2>/dev/null | awk '$1>600{print \"mtu_probe_interval=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP MTU probe interval. High intervals can delay MTU discovery."
+    },
+    {
+      "id": "tcp_pmtu_enable_disco_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pmtu_enable_disco 2>/dev/null | grep -q '^1$' && echo pmtu_enable_disco_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP PMTU discovery is enabled. PMTU discovery helps optimize packet sizes."
+    },
+    {
+      "id": "tcp_pmtu_probe_floor_low",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pmtu_probe_floor 2>/dev/null | awk '$1<48{print \"pmtu_probe_floor=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP PMTU probe floor. Low floors can cause PMTU issues."
+    },
+    {
+      "id": "tcp_comp_sack_nr_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_comp_sack_nr 2>/dev/null | awk '$1>44{print \"comp_sack_nr=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP compressed SACK number. High values can impact performance."
+    },
+    {
+      "id": "tcp_comp_sack_slack_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_comp_sack_slack 2>/dev/null | awk '$1>25{print \"comp_sack_slack=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP compressed SACK slack. High slack can affect SACK compression."
+    },
+    {
+      "id": "tcp_comp_sack_delay_ns_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_comp_sack_delay_ns 2>/dev/null | awk '$1>1000000{print \"comp_sack_delay_ns=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP compressed SACK delay. High delays can impact performance."
+    },
+    {
+      "id": "tcp_sack_comp_min_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack_comp_min 2>/dev/null | awk '$1>44{print \"sack_comp_min=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP SACK compression minimum. High values can affect compression efficiency."
+    },
+    {
+      "id": "tcp_sack_comp_max_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack_comp_max 2>/dev/null | awk '$1>44{print \"sack_comp_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP SACK compression maximum. High values can impact memory usage."
+    },
+    {
+      "id": "tcp_backlog_ack_defer_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_backlog_ack_defer 2>/dev/null | grep -q '^1$' && echo backlog_ack_defer_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP backlog ACK deferral enabled. This can improve performance under load."
+    },
+    {
+      "id": "tcp_backlog_ack_defer_max_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_backlog_ack_defer_max 2>/dev/null | awk '$1>16{print \"backlog_ack_defer_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP backlog ACK defer maximum. High values can delay acknowledgments."
+    },
+    {
+      "id": "tcp_tw_recycle_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_tw_recycle 2>/dev/null | grep -q '^1$' && echo tw_recycle_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP time-wait socket recycling is enabled. Recycling can help with connection handling but may cause issues."
+    },
+    {
+      "id": "tcp_fastopen_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fastopen 2>/dev/null | grep -q '^[^0]' && echo fastopen_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP Fast Open enabled. Fast Open can improve connection establishment but may have security implications."
+    },
+    {
+      "id": "tcp_fastopen_key_missing",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fastopen_key 2>/dev/null | grep -q '^0-0-0-0$' && echo fastopen_key_missing || true",
+      "sample_limit": 8,
+      "description": "Identifies missing TCP Fast Open key. Keys are required for Fast Open security."
+    },
+    {
+      "id": "tcp_fastopen_blackhole_timeout_sec_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fastopen_blackhole_timeout_sec 2>/dev/null | awk '$1>3600{print \"blackhole_timeout=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP Fast Open blackhole timeout. High timeouts can delay recovery from blackholes."
+    },
+    {
+      "id": "tcp_slow_start_after_idle_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_slow_start_after_idle 2>/dev/null | grep -q '^1$' && echo slow_start_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP slow start after idle enabled. This can impact performance but may be necessary for some scenarios."
+    },
+    {
+      "id": "tcp_tw_reuse_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_tw_reuse 2>/dev/null | grep -q '^1$' && echo tw_reuse_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP time-wait socket reuse enabled. Reuse can help with connection handling."
+    },
+    {
+      "id": "tcp_fack_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fack 2>/dev/null | grep -q '^1$' && echo fack_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP FACK (Forward Acknowledgment) enabled. FACK can impact network performance."
+    },
+    {
+      "id": "tcp_dsack_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_dsack 2>/dev/null | grep -q '^1$' && echo dsack_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP DSACK (Duplicate SACK) enabled. DSACK helps with duplicate packet detection."
+    },
+    {
+      "id": "tcp_ecn_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_ecn 2>/dev/null | grep -q '^1$' && echo ecn_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP ECN (Explicit Congestion Notification) enabled. ECN can be used for network optimization."
+    },
+    {
+      "id": "tcp_recovery_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_recovery 2>/dev/null | grep -q '^1$' && echo recovery_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP recovery mechanisms enabled. Recovery helps with network resilience."
+    },
+    {
+      "id": "tcp_sack_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack 2>/dev/null | grep -q '^1$' && echo sack_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP SACK is enabled. SACK can be exploited in certain attack scenarios."
+    },
+    {
+      "id": "tcp_window_scaling_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_window_scaling 2>/dev/null | grep -q '^1$' && echo window_scaling_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP window scaling enabled. Window scaling can be used for performance optimization but may have security implications."
+    },
+    {
+      "id": "tcp_timestamps_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_timestamps 2>/dev/null | grep -q '^1$' && echo timestamps_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP timestamps enabled. TCP timestamps can be used for host fingerprinting and clock skew attacks."
+    },
+    {
+      "id": "tcp_syncookies_disabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_syncookies 2>/dev/null | grep -q '^0$' && echo syncookies_disabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP SYN cookies are disabled. SYN cookies protect against SYN flood attacks."
+    },
+    {
+      "id": "tcp_abort_on_overflow_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_abort_on_overflow 2>/dev/null | grep -q '^1$' && echo abort_on_overflow_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP abort on overflow enabled. This can help prevent connection state exhaustion."
+    },
+    {
+      "id": "tcp_stdurg_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_stdurg 2>/dev/null | grep -q '^1$' && echo stdurg_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP urgent pointer interpretation enabled. Urgent pointers can be used in some attacks."
+    },
+    {
+      "id": "tcp_rfc1337_enabled",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_rfc1337 2>/dev/null | grep -q '^1$' && echo rfc1337_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP RFC 1337 compliance enabled. RFC 1337 helps with proper TIME-WAIT handling."
+    },
+    {
+      "id": "tcp_syn_retries_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_syn_retries 2>/dev/null | awk '$1>5{print \"syn_retries=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP SYN retry count. High retry counts can be exploited for resource exhaustion."
+    },
+    {
+      "id": "tcp_synack_retries_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_synack_retries 2>/dev/null | awk '$1>5{print \"synack_retries=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP SYN-ACK retries. High retries can be exploited for resource exhaustion."
+    },
+    {
+      "id": "tcp_max_syn_backlog_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_max_syn_backlog 2>/dev/null | awk '$1<2048{print \"max_syn_backlog=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP SYN backlog. Low backlogs can make systems vulnerable to SYN flood attacks."
+    },
+    {
+      "id": "tcp_fin_timeout_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fin_timeout 2>/dev/null | awk '$1>60{print \"fin_timeout=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP FIN timeout. High timeouts can lead to connection state exhaustion."
+    },
+    {
+      "id": "tcp_keepalive_time_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_keepalive_time 2>/dev/null | awk '$1<7200{print \"keepalive_time=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low TCP keepalive time. Low keepalive times can cause unnecessary connection overhead."
+    },
+    {
+      "id": "tcp_keepalive_probes_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_keepalive_probes 2>/dev/null | awk '$1<9{print \"keepalive_probes=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP keepalive probes. Low probe counts may not detect dead connections."
+    },
+    {
+      "id": "tcp_keepalive_intvl_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_keepalive_intvl 2>/dev/null | awk '$1<75{print \"keepalive_intvl=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP keepalive interval. Low intervals can cause excessive network traffic."
+    },
+    {
+      "id": "tcp_retries1_high",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_retries1 2>/dev/null | awk '$1>3{print \"retries1=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP retries1 value. High retries can cause connection delays."
+    },
+    {
+      "id": "tcp_retries2_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_retries2 2>/dev/null | awk '$1>8{print \"retries2=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP retries. High retry counts can cause resource exhaustion."
+    },
+    {
+      "id": "tcp_orphan_retries_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_orphan_retries 2>/dev/null | awk '$1>7{print \"orphan_retries=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP orphan retries. High retries can cause resource exhaustion."
+    },
+    {
+      "id": "tcp_max_tw_buckets_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_max_tw_buckets 2>/dev/null | awk '$1>262144{print \"max_tw_buckets=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP time-wait buckets. High values can consume memory."
+    },
+    {
+      "id": "tcp_max_orphans_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_max_orphans 2>/dev/null | awk '$1>262144{print \"max_orphans=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP orphan connections. High values can indicate connection issues."
+    },
+    {
+      "id": "tcp_abort_on_overflow_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_abort_on_overflow 2>/dev/null | grep -q '^1$' && echo abort_on_overflow_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp abort on overflow enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_syncookies_disabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_syncookies 2>/dev/null | grep -q '^0$' && echo syncookies_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp syncookies disabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_timestamps_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_timestamps 2>/dev/null | grep -q '^1$' && echo timestamps_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp timestamps enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_window_scaling_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_window_scaling 2>/dev/null | grep -q '^1$' && echo window_scaling_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp window scaling enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_sack_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack 2>/dev/null | grep -q '^1$' && echo sack_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp sack enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_recovery_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_recovery 2>/dev/null | grep -q '^1$' && echo recovery_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp recovery enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_ecn_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_ecn 2>/dev/null | grep -q '^1$' && echo ecn_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp ecn enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_dsack_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_dsack 2>/dev/null | grep -q '^1$' && echo dsack_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp dsack enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_fack_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fack 2>/dev/null | grep -q '^1$' && echo fack_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp fack enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_tw_reuse_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_tw_reuse 2>/dev/null | grep -q '^1$' && echo tw_reuse_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp tw reuse enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_slow_start_after_idle_enabled_final2",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_slow_start_after_idle 2>/dev/null | grep -q '^1$' && echo slow_start_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp slow start after idle enabled final2. This rule validates final2 settings for security compliance."
+    },
+    {
+      "id": "tcp_fastopen_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fastopen 2>/dev/null | grep -q '^[^0]' && echo fastopen_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP Fast Open enabled. Fast Open can improve connection establishment but may have security implications."
+    },
+    {
+      "id": "tcp_fastopen_key_missing_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fastopen_key 2>/dev/null | grep -q '^0-0-0-0$' && echo fastopen_key_missing || true",
+      "sample_limit": 8,
+      "description": "Identifies missing TCP Fast Open key. Keys are required for Fast Open security."
+    },
+    {
+      "id": "tcp_fastopen_blackhole_timeout_sec_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_fastopen_blackhole_timeout_sec 2>/dev/null | awk '$1>3600{print \"blackhole_timeout=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP Fast Open blackhole timeout. High timeouts can delay recovery from blackholes."
+    },
+    {
+      "id": "tcp_mtu_probing_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mtu_probing 2>/dev/null | grep -q '^1$' && echo mtu_probing_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP MTU probing enabled. MTU probing can optimize path MTU discovery."
+    },
+    {
+      "id": "tcp_pmtu_enable_disco_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pmtu_enable_disco 2>/dev/null | grep -q '^1$' && echo pmtu_enable_disco_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP PMTU discovery is enabled. PMTU discovery helps optimize packet sizes."
+    },
+    {
+      "id": "tcp_autocorking_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_autocorking 2>/dev/null | grep -q '^1$' && echo autocorking_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP autocorking enabled. Autocorking can improve performance but may have side effects."
+    },
+    {
+      "id": "tcp_no_metrics_save_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_no_metrics_save 2>/dev/null | grep -q '^1$' && echo no_metrics_save_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP metrics saving disabled. Saving metrics can help with connection optimization."
+    },
+    {
+      "id": "tcp_moderate_rcvbuf_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_moderate_rcvbuf 2>/dev/null | grep -q '^1$' && echo moderate_rcvbuf_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP receive buffer moderation enabled. Moderation can help with memory usage."
+    },
+    {
+      "id": "tcp_tso_win_divisor_wrong_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_tso_win_divisor 2>/dev/null | awk '$1!=3{print \"tso_win_divisor=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for incorrect TCP TSO window divisor. Proper divisors are important for TSO efficiency."
+    },
+    {
+      "id": "tcp_congestion_control_wrong_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null | grep -vE '^(bbr|cubic|reno)$' && echo wrong_congestion_control || true",
+      "sample_limit": 8,
+      "description": "Checks for non-standard TCP congestion control. Standard algorithms are more secure."
+    },
+    {
+      "id": "tcp_congestion_control_bbr_missing_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null | grep -v bbr && echo bbr_missing || true",
+      "sample_limit": 8,
+      "description": "Detects missing BBR congestion control. BBR can improve network performance."
+    },
+    {
+      "id": "tcp_min_tso_segs_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_min_tso_segs 2>/dev/null | awk '$1>2{print \"min_tso_segs=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP minimum TSO segments. High values can impact performance."
+    },
+    {
+      "id": "tcp_pacing_ss_ratio_wrong_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pacing_ss_ratio 2>/dev/null | awk '$1!=200{print \"pacing_ss_ratio=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects incorrect TCP pacing slow start ratio. Proper ratios optimize performance."
+    },
+    {
+      "id": "tcp_pacing_ca_ratio_wrong_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pacing_ca_ratio 2>/dev/null | awk '$1!=120{print \"pacing_ca_ratio=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies incorrect TCP pacing congestion avoidance ratio. Proper ratios are important for performance."
+    },
+    {
+      "id": "tcp_default_init_rwnd_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_default_init_rwnd 2>/dev/null | awk '$1<10{print \"default_init_rwnd=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP default initial receive window. Low windows can impact performance."
+    },
+    {
+      "id": "tcp_thin_linear_timeouts_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_thin_linear_timeouts 2>/dev/null | awk '$1>6{print \"thin_linear_timeouts=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP thin linear timeouts. High values can cause connection issues."
+    },
+    {
+      "id": "tcp_thin_dupack_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_thin_dupack 2>/dev/null | awk '$1>1000{print \"thin_dupack=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP thin duplicate ACK threshold. High values can delay retransmission."
+    },
+    {
+      "id": "tcp_early_retrans_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_early_retrans 2>/dev/null | grep -q '^1$' && echo early_retrans_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP early retransmission is enabled. Early retrans can improve performance."
+    },
+    {
+      "id": "tcp_recovery_enabled_final3",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_recovery 2>/dev/null | grep -q '^1$' && echo recovery_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: tcp recovery enabled final3. This rule validates final3 settings for security compliance."
+    },
+    {
+      "id": "tcp_early_demux_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP early demultiplexing enabled. Early demux can improve performance."
+    },
+    {
+      "id": "tcp_early_demux_enabled_ipv6_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv6.tcp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP early demux is enabled for IPv6. This can improve IPv6 performance."
+    },
+    {
+      "id": "udp_early_demux_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.udp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: udp early demux enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "udp_early_demux_enabled_ipv6_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv6.udp_early_demux 2>/dev/null | grep -q '^1$' && echo early_demux_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: udp early demux enabled ipv6 final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "tcp_limit_output_bytes_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_limit_output_bytes 2>/dev/null | awk '$1>262144{print \"limit_output_bytes=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP limit output bytes. High limits can impact memory usage."
+    },
+    {
+      "id": "tcp_challenge_ack_limit_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_challenge_ack_limit 2>/dev/null | awk '$1>1000{print \"challenge_ack_limit=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP challenge ACK limit. High limits can be exploited for attacks."
+    },
+    {
+      "id": "tcp_min_rtt_wlen_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_min_rtt_wlen 2>/dev/null | awk '$1>300{print \"min_rtt_wlen=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP minimum RTT window length. High values can impact performance."
+    },
+    {
+      "id": "tcp_probe_interval_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_probe_interval 2>/dev/null | awk '$1>60000{print \"probe_interval=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP probe interval. High intervals can delay connection recovery."
+    },
+    {
+      "id": "tcp_probe_threshold_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_probe_threshold 2>/dev/null | awk '$1>8{print \"probe_threshold=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP probe threshold. High thresholds can delay retransmission."
+    },
+    {
+      "id": "tcp_mtu_probe_floor_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mtu_probe_floor 2>/dev/null | awk '$1<48{print \"mtu_probe_floor=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low TCP MTU probe floor. Low floors can cause fragmentation issues."
+    },
+    {
+      "id": "tcp_base_mss_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_base_mss 2>/dev/null | awk '$1<512{print \"base_mss=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP base MSS. Low MSS can impact performance."
+    },
+    {
+      "id": "tcp_mtu_probe_interval_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mtu_probe_interval 2>/dev/null | awk '$1>600{print \"mtu_probe_interval=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP MTU probe interval. High intervals can delay MTU discovery."
+    },
+    {
+      "id": "tcp_pmtu_probe_floor_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_pmtu_probe_floor 2>/dev/null | awk '$1<48{print \"pmtu_probe_floor=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP PMTU probe floor. Low floors can cause PMTU issues."
+    },
+    {
+      "id": "tcp_comp_sack_nr_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_comp_sack_nr 2>/dev/null | awk '$1>44{print \"comp_sack_nr=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP compressed SACK number. High values can impact performance."
+    },
+    {
+      "id": "tcp_comp_sack_slack_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_comp_sack_slack 2>/dev/null | awk '$1>25{print \"comp_sack_slack=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP compressed SACK slack. High slack can affect SACK compression."
+    },
+    {
+      "id": "tcp_comp_sack_delay_ns_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_comp_sack_delay_ns 2>/dev/null | awk '$1>1000000{print \"comp_sack_delay_ns=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects high TCP compressed SACK delay. High delays can impact performance."
+    },
+    {
+      "id": "tcp_sack_comp_min_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack_comp_min 2>/dev/null | awk '$1>44{print \"sack_comp_min=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP SACK compression minimum. High values can affect compression efficiency."
+    },
+    {
+      "id": "tcp_sack_comp_max_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_sack_comp_max 2>/dev/null | awk '$1>44{print \"sack_comp_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for high TCP SACK compression maximum. High values can impact memory usage."
+    },
+    {
+      "id": "tcp_backlog_ack_defer_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_backlog_ack_defer 2>/dev/null | grep -q '^1$' && echo backlog_ack_defer_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP backlog ACK deferral enabled. This can improve performance under load."
+    },
+    {
+      "id": "tcp_backlog_ack_defer_max_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_backlog_ack_defer_max 2>/dev/null | awk '$1>16{print \"backlog_ack_defer_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies high TCP backlog ACK defer maximum. High values can delay acknowledgments."
+    },
+    {
+      "id": "tcp_tw_recycle_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_tw_recycle 2>/dev/null | grep -q '^1$' && echo tw_recycle_enabled || true",
+      "sample_limit": 8,
+      "description": "Checks if TCP time-wait socket recycling is enabled. Recycling can help with connection handling but may cause issues."
+    },
+    {
+      "id": "tcp_stdurg_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_stdurg 2>/dev/null | grep -q '^1$' && echo stdurg_enabled || true",
+      "sample_limit": 8,
+      "description": "Detects TCP urgent pointer interpretation enabled. Urgent pointers can be used in some attacks."
+    },
+    {
+      "id": "tcp_rfc1337_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_rfc1337 2>/dev/null | grep -q '^1$' && echo rfc1337_enabled || true",
+      "sample_limit": 8,
+      "description": "Identifies TCP RFC 1337 compliance enabled. RFC 1337 helps with proper TIME-WAIT handling."
+    },
+    {
+      "id": "tcp_adv_win_scale_wrong_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_adv_win_scale 2>/dev/null | awk '$1!=1 && $1!=2{print \"adv_win_scale=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies incorrect TCP advanced window scaling. Proper scaling is important for performance."
+    },
+    {
+      "id": "tcp_app_win_wrong_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_app_win 2>/dev/null | awk '$1!=31{print \"app_win=\"$1}'",
+      "sample_limit": 8,
+      "description": "Checks for incorrect TCP application window. Proper window sizing affects performance."
+    },
+    {
+      "id": "tcp_rmem_max_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.rmem_max 2>/dev/null | awk '$1<262144{print \"rmem_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Detects low TCP receive memory maximum. Low limits can cause performance issues."
+    },
+    {
+      "id": "tcp_wmem_max_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.wmem_max 2>/dev/null | awk '$1<262144{print \"wmem_max=\"$1}'",
+      "sample_limit": 8,
+      "description": "Identifies low TCP send memory maximum. Low limits can impact network throughput."
+    },
+    {
+      "id": "tcp_mem_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_mem 2>/dev/null | awk '{split($0,a,\" \"); if(a[1]<196608 || a[2]<262144 || a[3]<393216) print \"tcp_mem=\"$0}'",
+      "sample_limit": 8,
+      "description": "Checks for low TCP memory limits. Low limits can cause connection failures."
+    },
+    {
+      "id": "somaxconn_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.somaxconn 2>/dev/null | awk '$1<1024{print \"somaxconn=\"$1}'",
+      "sample_limit": 8,
+      "description": "Network security check: somaxconn low final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "netdev_max_backlog_low_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.core.netdev_max_backlog 2>/dev/null | awk '$1<5000{print \"netdev_max_backlog=\"$1}'",
+      "sample_limit": 8,
+      "description": "Network security check: netdev max backlog low final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "ip_forward_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.ip_forward 2>/dev/null | grep -q '^1$' && echo ip_forward_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: ip forward enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "send_redirects_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.send_redirects 2>/dev/null | grep -q '^1$' && echo send_redirects_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: send redirects enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "accept_redirects_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_redirects 2>/dev/null | grep -q '^1$' && echo accept_redirects_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: accept redirects enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "secure_redirects_disabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.secure_redirects 2>/dev/null | grep -q '^0$' && echo secure_redirects_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: secure redirects disabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "shared_media_disabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.shared_media 2>/dev/null | grep -q '^0$' && echo shared_media_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: shared media disabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "bootp_relay_disabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.bootp_relay 2>/dev/null | grep -q '^0$' && echo bootp_relay_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: bootp relay disabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "accept_source_route_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_source_route 2>/dev/null | grep -q '^1$' && echo accept_source_route_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: accept source route enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "rp_filter_disabled_all_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.rp_filter 2>/dev/null | grep -q '^0$' && echo rp_filter_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: rp filter disabled all final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "log_martians_disabled_all_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.log_martians 2>/dev/null | grep -q '^0$' && echo log_martians_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: log martians disabled all final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "icmp_ratelimit_high_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_ratelimit 2>/dev/null | awk '$1>1000{print \"icmp_ratelimit=\"$1}'",
+      "sample_limit": 8,
+      "description": "Network security check: icmp ratelimit high final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "icmp_ratemask_wrong_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_ratemask 2>/dev/null | awk '$1!=6168{print \"icmp_ratemask=\"$1}'",
+      "sample_limit": 8,
+      "description": "Network security check: icmp ratemask wrong final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "icmp_echo_ignore_broadcasts_disabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_echo_ignore_broadcasts 2>/dev/null | grep -q '^0$' && echo ignore_broadcasts_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: icmp echo ignore broadcasts disabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "icmp_ignore_bogus_error_responses_disabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.icmp_ignore_bogus_error_responses 2>/dev/null | grep -q '^0$' && echo ignore_bogus_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: icmp ignore bogus error responses disabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "syn_cookies_disabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.tcp_syncookies 2>/dev/null | grep -q '^0$' && echo syn_cookies_disabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: syn cookies disabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "source_routing_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_source_route 2>/dev/null | grep -q '^1$' && echo source_routing_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: source routing enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "icmp_redirects_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "sysctl -n net.ipv4.conf.all.accept_redirects 2>/dev/null | grep -q '^1$' && echo redirects_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: icmp redirects enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "ipv6_enabled_final",
+      "severity": 2,
+      "tags": [
+        "network"
+      ],
+      "cmd": "test -f /proc/sys/net/ipv6/conf/all/disable_ipv6 && cat /proc/sys/net/ipv6/conf/all/disable_ipv6 2>/dev/null | grep -q '^0$' && echo ipv6_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: ipv6 enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "core_dumps_enabled_final",
+      "severity": 2,
+      "tags": [
+        "kernel"
+      ],
+      "cmd": "sysctl -n fs.suid_dumpable 2>/dev/null | grep -q '^[^0]' && echo core_dumps_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: core dumps enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "kernel_modules_autoload_enabled_final",
+      "severity": 2,
+      "tags": [
+        "kernel"
+      ],
+      "cmd": "sysctl -n kernel.modules_disabled 2>/dev/null | grep -q '^0$' && echo autoload_enabled || true",
+      "sample_limit": 8,
+      "description": "Network security check: kernel modules autoload enabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "apparmor_disabled_final",
+      "severity": 3,
+      "tags": [
+        "apparmor"
+      ],
+      "cmd": "aa-status 2>/dev/null | head -n1 | egrep -qi 'disabled|not found|command not found'",
+      "sample_limit": 8,
+      "description": "Network security check: apparmor disabled final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "auditd_inactive_final",
+      "severity": 3,
+      "tags": [
+        "audit"
+      ],
+      "cmd": "systemctl is-active auditd 2>/dev/null | grep -v active",
+      "sample_limit": 8,
+      "description": "Network security check: auditd inactive final. This rule validates final settings for security compliance."
+    },
+    {
+      "id": "iptables_permissive_final",
+      "severity": 3,
+      "tags": [
+        "firewall"
+      ],
+      "cmd": "iptables -S 2>/dev/null | grep '-P INPUT ACCEPT' | grep -v -q '\\-A INPUT' && echo default_accept",
+      "sample_limit": 8,
+      "description": "Network security check: iptables permissive final. This rule validates final settings for security compliance."
+    }
+  ]
+}
