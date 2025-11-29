@@ -1,4 +1,4 @@
-# Sentrilite — Hybrid-Cloud Observability, Runtime Security & Security Posture Management in One Platform
+# Sentrilite — Threat-Detection-as-Code, eBPF-based, Observability, Runtime-Security & Cloud-Security Posture Management in One Platform with AI/LLM Insights.
 
 #Sentrilite Workflow Diagram
 ![Sentrilite hybrid cloud diagram](./Sentrilite_Architecture_Diagram.png)
@@ -10,12 +10,16 @@
 ![Sentrilite Server_Dashboard](./live_dashboard.png)
 # PDF Report
 ![Sentrilite PDF_Report](./pdf_report.png)
+# CI/CD Workflow
+![Sentrilite_CI_CD_Workflow](./CI_CD_Workflow.png)
 
-Sentrilite is a Hybrid-Cloud Programmable Observability & Runtime-Security layer and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
+
+Sentrilite is a Detection-as-Code (DAC), Hybrid-Cloud Programmable Observability, Runtime-Security & CSPM Platform and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
 Hybrid & multi-cloud ready: Works the same across public clouds and on-prem—EKS, GKE, AKS, vanilla Kubernetes, bare-metal, and edge—so you get a consistent, low-overhead security and observability layer for hybrid/multi-cloud environments all managed from a single dashboard.
 
 In Kubernetes, Sentrilite runs as a privileged DaemonSet on every node (no changes to your workloads). Each agent uses hostPID/hostNetwork to observe container processes, then enriches events with pod metadata (namespace, pod, container, UID) by correlating cgroups with the API server. This lets you see all the activity at the container/pod level:
 
+- Detection-As-Code: Add / modify detection rules instantly via json files. Hot Reload — no rebuilds, no redeploys. See custom_rule.json and security_rules.json
 - Seamless install & upgrade: kubectl apply the DaemonSet (sentrilite.yaml) and you’re done; rolling updates pick up new rules and images cluster-wide.
 - Process visibility: Capture commands and args (execve) per container/pod with user, PID/PPID, and image context; trigger rules like “alert on cat /etc/passwd” or “block high-risk binaries.”
 - File activity: Match sensitive file paths (config, keys, tokens) using rule packs; flag exfil patterns and privilege-escalation attempts.
@@ -156,6 +160,19 @@ Open main.html and upload the file nodes.txt
 For Non-Kubernetes Linux based Cluster
 
 ```
+Run it with Docker on a Linux Server:
+
+docker run --rm -it \
+--privileged \
+-v /sys/fs/bpf:/sys/fs/bpf \
+-v /sys/kernel/debug:/sys/kernel/debug \
+-p 8080:8080 \
+sentrilite/local:1.0.0
+
+It will auto-generate a PDF security report every 5 minutes, and you can view/download them at: http://localhost:8080
+
+OR
+
 1. **Unzip the bundle:**
 
 unzip sentrilite_agent_bundle.zip
