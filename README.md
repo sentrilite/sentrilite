@@ -2,9 +2,9 @@
 
 # CI/CD Workflow
 ![Sentrilite_CI_CD_Workflow](./CI_CD_Workflow.png)
-#Sentrilite Workflow Diagram
+# Sentrilite Workflow Diagram
 ![Sentrilite hybrid cloud diagram](./Sentrilite_Architecture_Diagram.png)
-#Sentrilite Components
+# Sentrilite Components
 ![Sentrilite components](./components.png)
 # Main Dashboard
 ![Sentrilite Main Dashboard](./main_dashboard.png)
@@ -13,6 +13,7 @@
 # PDF Report
 ![Sentrilite PDF_Report](./Sample_Alert_Report.png)
 
+## ✨ Description
 
 Sentrilite is a Detection-as-Code (DAC), Hybrid-Cloud Programmable Observability, Runtime-Security & CSPM Platform and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
 Hybrid & multi-cloud ready: Works the same across public clouds and on-prem—EKS, GKE, AKS, vanilla Kubernetes, bare-metal, and edge—so you get a consistent, low-overhead security and observability layer for hybrid/multi-cloud environments all managed from a single dashboard.
