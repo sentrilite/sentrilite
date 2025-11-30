@@ -1,5 +1,7 @@
-# Sentrilite — Threat-Detection-as-Code, eBPF-based, Observability, Runtime-Security & Cloud-Security Posture Management in One Platform with AI/LLM Insights.
+# Sentrilite — Threat Detection-as-Code(DAC), eBPF-based, Observability, Runtime-Security & Cloud-Security Posture Management in One Platform with AI/LLM Insights.
 
+# CI/CD Workflow
+![Sentrilite_CI_CD_Workflow](./CI_CD_Workflow.png)
 #Sentrilite Workflow Diagram
 ![Sentrilite hybrid cloud diagram](./Sentrilite_Architecture_Diagram.png)
 #Sentrilite Components
@@ -9,9 +11,7 @@
 # Live Server Dashboard
 ![Sentrilite Server_Dashboard](./live_dashboard.png)
 # PDF Report
-![Sentrilite PDF_Report](./pdf_report.png)
-# CI/CD Workflow
-![Sentrilite_CI_CD_Workflow](./CI_CD_Workflow.png)
+![Sentrilite PDF_Report](./Sample_Alert_Report.png)
 
 
 Sentrilite is a Detection-as-Code (DAC), Hybrid-Cloud Programmable Observability, Runtime-Security & CSPM Platform and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
