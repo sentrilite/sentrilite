@@ -1,11 +1,13 @@
 # Sentrilite — Threat Detection-as-Code(DAC), eBPF-based, Observability, Runtime-Security & Cloud-Security Posture Management in One Platform with AI/LLM Insights.
 
-## ✨ Quick Trial 
+# ✨ Quick Trial 
 
-# Run it with Docker
+## Run it with Docker 
+
+PDF reports can be downloaded at http://localhost:8080
 
 ```
-sudo docker run -d \
+sudo docker run \
   --name sentrilite \
   --privileged \
   --network host \
@@ -15,7 +17,9 @@ sudo docker run -d \
 
 ```
 
-# Run it on Kubernetes
+## Run it on Kubernetes Cluster
+
+git clone repo. cd to charts directory and run:
 
 ```
 helm upgrade --install sentrilite charts/sentrilite -n kube-system --create-namespace
