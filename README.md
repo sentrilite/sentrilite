@@ -1,5 +1,26 @@
 # Sentrilite — Threat Detection-as-Code(DAC), eBPF-based, Observability, Runtime-Security & Cloud-Security Posture Management in One Platform with AI/LLM Insights.
 
+## ✨ Quick Trial 
+
+# Run it with Docker
+
+```
+sudo docker run -d \
+  --name sentrilite \
+  --privileged \
+  --network host \
+  -v /sys/fs/bpf:/sys/fs/bpf \
+  -v /sys/kernel/debug:/sys/kernel/debug \
+  sentrilite/local:1.0.0
+
+```
+
+# Run it on Kubernetes
+
+```
+helm upgrade --install sentrilite charts/sentrilite -n kube-system --create-namespace
+```
+
 # Sentrilite Alert Report
 ![Sentrilite PDF_Report](./Sample_Alert_Report.png)
 # CI/CD Workflow
@@ -13,7 +34,7 @@
 # Live Server Dashboard
 ![Sentrilite Server_Dashboard](./live_dashboard.png)
 
-## ✨ Description
+# ✨ Description
 
 Sentrilite is a Detection-as-Code (DAC), Hybrid-Cloud Programmable Observability, Runtime-Security & CSPM Platform and streams structured, real-time events to a web UI where custom rules drive risk scoring, alerting, and reporting.
 Hybrid & multi-cloud ready: Works the same across public clouds and on-prem—EKS, GKE, AKS, vanilla Kubernetes, bare-metal, and edge—so you get a consistent, low-overhead security and observability layer for hybrid/multi-cloud environments all managed from a single dashboard.
