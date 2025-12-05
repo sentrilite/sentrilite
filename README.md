@@ -1,5 +1,7 @@
 # Sentrilite — Threat Detection-as-Code(DAC), eBPF-based, Observability, Runtime-Security & Cloud-Security Posture Management in One Platform with AI/LLM Insights.
 
+# Sentrilite Alert Report
+![Sentrilite PDF_Report](./Sample_Alert_Report.png)
 # CI/CD Workflow
 ![Sentrilite_CI_CD_Workflow](./CI_CD_Workflow.png)
 # Sentrilite Workflow Diagram
@@ -10,8 +12,6 @@
 ![Sentrilite Main Dashboard](./main_dashboard.png)
 # Live Server Dashboard
 ![Sentrilite Server_Dashboard](./live_dashboard.png)
-# PDF Report
-![Sentrilite PDF_Report](./Sample_Alert_Report.png)
 
 ## ✨ Description
 
