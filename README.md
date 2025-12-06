@@ -4,8 +4,6 @@
 
 ## Run it with Docker 
 
-PDF reports can be downloaded at http://localhost:8080
-
 ```
 sudo docker run \
   --name sentrilite \
@@ -16,10 +14,11 @@ sudo docker run \
   sentrilite/local:1.0.0
 
 ```
+PDF reports can be downloaded at http://localhost:8080. Reports are generated every 5 mins.
 
 ## Run it on Kubernetes Cluster
 
-git clone repo. cd to charts directory and run:
+git clone repo. cd to the charts directory and run:
 
 ```
 helm upgrade --install sentrilite charts/sentrilite -n kube-system --create-namespace
